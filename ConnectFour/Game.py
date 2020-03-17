@@ -7,19 +7,17 @@ SPACING = 5
 DIAMETER = 100
 SIZE = (7*(SPACING+DIAMETER)+SPACING, 6*(SPACING+DIAMETER)+SPACING)
 
-red_coin = None
-yellow_coin = None
-white_coin = None
+ENCODE_PLAYER = [1, -1] # The first element of ENCODE_PLAYER is attributed to the first player etc.
 
 class Slot(pygame.sprite.Sprite):
 
-	def __init__(self, position, unique_id):
+	def __init__(self, position, image, unique_id):
 		if not pygame.get_init():
 			pygame.init()
 
 		pygame.sprite.Sprite.__init__(self)
 
-		self.image = pygame.transform.scale(white_coin, (DIAMETER,DIAMETER))
+		self.image = pygame.transform.scale(image, (DIAMETER,DIAMETER))
 		self.rect = self.image.get_rect().move(position)
 		self.position = position
 		self.id = unique_id
@@ -35,27 +33,69 @@ class Grid:
 
 	def __init__(self):
 		self.grid = np.zeros((7,6))
+		self.coin_played = 0
 
-	def play_coin(self, player, column):
-		print(player)
+	def play_coin(self, value, column):
 		if self.grid[column][0] != 0:
 			return None
 		else:
 			for row in range(5, -1, -1):
 				if self.grid[column][row] == 0:
-					self.grid[column][row] = player
+					self.grid[column][row] = value
+					self.coin_played += 1
 					return (column, row)
 
-	def pixel_to_grid(self, cell):
-		row = int((cell[0] - SPACING) / (SPACING + DIAMETER))
-		column = int((cell[1] - SPACING) / (SPACING + DIAMETER))
-		return row, column
+	def is_winning_coin(self, cell, value):
+		# Horizontal
+		counter = 0
+		for column in range(max(0, cell[0] - 3), min(6, cell[0] + 3)):
+			if self.grid[column][cell[1]] == value:
+				counter += 1
+			else:
+				counter = 0
 
-	def is_winning_coin(self, cell):
+			if counter == 4:
+				return True
+
+		# Vertical
+		counter = 0
+		for row in range(max(0, cell[1] - 3), min(5, cell[1] + 3)):
+			if self.grid[cell[0]][row] == value:
+				counter += 1
+			else:
+				counter = 0
+
+			if counter == 4:
+				return True
+
+		# Diagonal /
+		start = min(3 if (cell[0]-3) >= 0 else cell[0], 3 if (cell[1]-3) >= 0 else cell[1])
+		stop = min(3 if (cell[0]+3) <= 6 else 6-cell[0], 3 if (cell[1]+3) <= 5 else 5-cell[1]) + 1
+		for i in range(-start, stop):
+				if self.grid[cell[0]+i][cell[1]+i] == value:
+					counter += 1
+				else:
+					counter = 0
+
+				if counter == 4:
+					return True
+
+		# Diagonal \
+		start = min(3 if (cell[0]+3) <= 6 else cell[0], 3 if (cell[1]-3) >= 0 else cell[1])
+		stop = min(3 if (cell[0]-3) >= 0 else 6-cell[0], 3 if (cell[1]+3) <= 5 else 5-cell[1]) + 1
+		for i in range(-start, stop):
+				if self.grid[cell[0]+i][cell[1]+i] == value:
+					counter += 1
+				else:
+					counter = 0
+
+				if counter == 4:
+					return True
+
 		return False
 
 	def is_full(self):
-		return False
+		return self.coin_played == 7*6
 
 class Player:
 
@@ -65,7 +105,7 @@ class Player:
 
 		self.clock = pygame.time.Clock()
 
-	def play(self, player, *argv, **kwargs):
+	def play(self, *argv, **kwargs):
 		while True and RENDER:
 			self.clock.tick(30)
 
@@ -76,25 +116,35 @@ class Player:
 					return int((event.pos[0] - SPACING) / (SPACING + DIAMETER))
 
 class Bot:
-	pass
+	
+	def __init__(self):
+		pass
 
-class Loop:
+	def play(self):
+		pass
 
-	def __init__(self, array):
-		self.index = array[-1]
-		self.array = array
-		self.len = len(array)
+class PlayerManager:
 
-	def __iter__(self):
-		return self
+	def __init__(self, *args, starting_player=0):
+		self.players = []
+		self.current_player = starting_player # 0 or 1
+		self.index = starting_player # 0 or 1
 
-	def __next__(self):
-		self.index += 1
+		for arg in args:
+			if isinstance(arg, Player) or isinstance(arg, Bot):
+				self.players.append(arg)
 
-		if self.index >= self.len:
-			self.index -= self.len
+		self.one_player = len(self.players) == 1
+	
+	def play(self):
+		if not self.one_player:
+			self.index = not self.index
+		
+		self.current_player = not self.current_player # 0 becomes 1 and vice versa
 
-		return self.array[self.index]
+		cell = self.players[self.index].play()
+
+		return self.current_player, cell
 
 class Game:
 
@@ -104,9 +154,13 @@ class Game:
 
 		if RENDER:
 			if pygame.get_init():
-				pygame.init()
+				pygame.init() # Initialize if needed
 
-			self.load_images()
+			self.images = [ # Load the images
+				pygame.image.load('Sprites/RedCoin.png'),
+				pygame.image.load('Sprites/YellowCoin.png'),
+				pygame.image.load('Sprites/WhiteCoin.png'),
+			]
 
 			self.screen = pygame.display.set_mode(SIZE)
 			pygame.display.set_caption("ConnectFourGame")
@@ -118,16 +172,9 @@ class Game:
 
 			for column in range(7):
 				for row in range(6):
-					self.slot_sprites.add(Slot(self.cell_to_position((column, row)), self.cell_to_id((column, row))))
+					self.slot_sprites.add(Slot(self.cell_to_position((column, row)), self.images[-1] , self.cell_to_id((column, row))))
 
 			self.render()
-
-	def load_images(self):
-		global red_coin, yellow_coin, white_coin
-
-		red_coin = pygame.image.load('Sprites/RedCoin.png')
-		yellow_coin = pygame.image.load('Sprites/YellowCoin.png')
-		white_coin = pygame.image.load('Sprites/WhiteCoin.png')
 	
 	def cell_to_position(self, cell):
 		return int(cell[0] * (SPACING + DIAMETER) + SPACING), int(cell[1] * (SPACING + DIAMETER) + SPACING)
@@ -135,19 +182,19 @@ class Game:
 	def cell_to_id(self, cell):
 		return 10 * cell[0] + cell[1]
 
-	def step(self, player, action):
+	def step(self, value, player, action):
 		reward = -0.01
-		cell = self.grid.play_coin(player, action)
+		cell = self.grid.play_coin(value, action)
 		if cell == None:
 			# Unauthorized action!
 			return
 
-		print(cell, self.grid.grid)
-		if self.grid.is_winning_coin(cell) or self.grid.is_full():
+		print(self.grid.grid)
+		if self.grid.is_winning_coin(cell, value) or self.grid.is_full():
 			self.over = True
 
 		if RENDER:
-			self.slot_sprites.update(red_coin, self.cell_to_id(cell))
+			self.slot_sprites.update(self.images[player], self.cell_to_id(cell))
 
 	def render(self):
 		self.slot_sprites.draw(self.board)
@@ -156,13 +203,10 @@ class Game:
 
 game = Game()
 
-player = Player()
-player_manager = Loop([-1,1])
-current_palyer = player_manager.index
+player_manager = PlayerManager(Player())
 
 while not game.over:
-	action = player.play(current_palyer)
-	game.step(current_palyer, action)
-	current_palyer = next(player_manager)
+	current_player, action = player_manager.play()
+	game.step(ENCODE_PLAYER[current_player], current_player, action)
 	if RENDER:
 		game.render()
