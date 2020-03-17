@@ -1,0 +1,464 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"pla",
+				"player_manager\tLoop ⟠"
+			],
+			[
+				"c",
+				"current_player\tLoop ⟠"
+			],
+			[
+				"get",
+				"get_width()\tfunction ⟠"
+			],
+			[
+				"load",
+				"load_images"
+			],
+			[
+				"__",
+				"__init__"
+			],
+			[
+				"Vec",
+				"Vec3\ttype ⟠"
+			],
+			[
+				"game_",
+				"game_ball"
+			],
+			[
+				"my",
+				"my_car_position\tunknown ⟠"
+			],
+			[
+				"a",
+				"acos(…)\tfunction ⟠"
+			],
+			[
+				"ex",
+				"except \tkeyword ⟠"
+			],
+			[
+				"f",
+				"features"
+			],
+			[
+				"cell",
+				"cell_values\tlist ⟠"
+			],
+			[
+				"col",
+				"col_data\tlist ⟠"
+			],
+			[
+				"num",
+				"numpy as np\tmodule ⟠"
+			],
+			[
+				"S",
+				"SEQ_LEN\tint ⟠"
+			],
+			[
+				"getco",
+				"getcompname\tfunction ⟠"
+			],
+			[
+				"st",
+				"struct\tmodule ⟠"
+			],
+			[
+				"fram",
+				"frames\tstr ⟠"
+			],
+			[
+				"wav",
+				"wav_file\twave.Wave_read ⟠"
+			],
+			[
+				"udate",
+				"update_time\tfloat | builtins.float ⟠"
+			],
+			[
+				"sec",
+				"screen"
+			],
+			[
+				"SAV",
+				"SAVE_MODEL"
+			],
+			[
+				"epi",
+				"episode"
+			],
+			[
+				"M",
+				"MODEL_NAME"
+			],
+			[
+				"new_",
+				"new_current_states"
+			],
+			[
+				"new",
+				"new_current_states"
+			],
+			[
+				"cur",
+				"current_state"
+			],
+			[
+				"curre",
+				"current_state"
+			],
+			[
+				"p",
+				"pile_history"
+			],
+			[
+				"va",
+				"valid_cards"
+			],
+			[
+				"cu",
+				"current_player"
+			],
+			[
+				"hig",
+				"high_card"
+			],
+			[
+				"card",
+				"cards_to_nums"
+			],
+			[
+				"nums",
+				"nums_to_cards"
+			],
+			[
+				"curer",
+				"current_player"
+			],
+			[
+				"rand",
+				"randint"
+			],
+			[
+				"curr",
+				"current_player"
+			],
+			[
+				"current",
+				"current_step"
+			],
+			[
+				"pile",
+				"pile_history"
+			],
+			[
+				"player",
+				"players"
+			],
+			[
+				"game",
+				"game_area"
+			],
+			[
+				"P",
+				"PADDING"
+			],
+			[
+				"pi",
+				"pile_card_rect"
+			],
+			[
+				"texts",
+				"texts_rects"
+			],
+			[
+				"tex",
+				"texts"
+			],
+			[
+				"tabel_mat_",
+				"tabel_mat_rect"
+			],
+			[
+				"pil",
+				"pile_rect"
+			],
+			[
+				"taa",
+				"tabel_mat_rect"
+			],
+			[
+				"ta",
+				"tabel_mat"
+			],
+			[
+				"tran",
+				"transform"
+			],
+			[
+				"sel",
+				"self"
+			],
+			[
+				"pl",
+				"player_cards"
+			],
+			[
+				"suff",
+				"shuffled_cards"
+			],
+			[
+				"re",
+				"rects"
+			],
+			[
+				"ra",
+				"random"
+			],
+			[
+				"ca",
+				"card_back_img"
+			],
+			[
+				"lo",
+				"load"
+			],
+			[
+				"C",
+				"CARD_SIZE"
+			]
+		]
+	},
+	"buffers":
+	[
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+		[
+			[
+				[
+					"Packages/Python/Python.sublime-build",
+					""
+				],
+				[
+					"Packages/Python/Python.sublime-build",
+					"Syntax Check"
+				]
+			],
+			[
+				"Packages/Python/Python.sublime-build",
+				""
+			]
+		]
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"Package Control: ",
+				"Package Control: Install Package"
+			],
+			[
+				"Package Control: ins",
+				"Package Control: Install Package"
+			]
+		],
+		"width": 0.0
+	},
+	"console":
+	{
+		"height": 0.0,
+		"history":
+		[
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/D/Colin Berger/Documents/Python/ConnectFour/Game.py",
+		"/C/Users/COLINB~1/AppData/Local/Temp/kite_tutorial.py",
+		"/C/Users/Colin Berger/AppData/Roaming/Sublime Text 3/Packages/KiteSublime/KiteSublime.sublime-settings",
+		"/C/Users/Colin Berger/AppData/Roaming/Sublime Text 3/Packages/User/KiteSublime.sublime-settings",
+		"/d/colin berger/documents/Python/RLBOT/rlbotpythonexample-master/src/util/orientation.py",
+		"/d/colin berger/documents/Python/RLBOT/rlbotpythonexample-master/src/util/vec.py",
+		"/D/Colin Berger/Documents/Python/RLBOT/RLBotPythonExample-master/src/bot.py",
+		"/D/Colin Berger/Documents/Python/WorkHoursAIDemo/SimpleArtigicialNeuralNetwork.py",
+		"/D/Colin Berger/Documents/Python/WorkHoursAIDemo/GenerateDataFromExcelSheet.py",
+		"/D/Colin Berger/Documents/Python/MusicProcessing/GenerateDatasetFromWavFiles.py",
+		"/D/Colin Berger/Documents/Python/MusicProcessing/PlotSineWave.py",
+		"/D/Colin Berger/Documents/Python/MusicProcessing/AnimationsTest.py",
+		"/D/Colin Berger/Documents/Python/MusicProcessing/MusicProcessing.sublime-project",
+		"/D/Colin Berger/Documents/Python/SublimeProjects/JassEngineNew.py",
+		"/D/Colin Berger/OneDrive/JassDQN.py",
+		"/D/Colin Berger/Documents/Python/SublimeProjects/JassEngine.py"
+	],
+	"find":
+	{
+		"height": 28.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": true,
+		"find_history":
+		[
+			"()]",
+			"y",
+			"x",
+			"column",
+			"row",
+			"slots",
+			"2*RADIUS",
+			"RADIUS",
+			"center",
+			"screen_size",
+			"np",
+			"evaluation_index",
+			"i",
+			"data"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			"row",
+			"column",
+			"x",
+			"y",
+			"slot_sprites",
+			"DIAMETER",
+			"position",
+			"index",
+			"evaluation_index",
+			"features"
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": true,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"sheets":
+			[
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 28.0
+	},
+	"input":
+	{
+		"height": 0.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.exec":
+	{
+		"height": 263.0
+	},
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "Packages/Python/Python.sublime-build",
+	"project": "ConnectFourProject.sublime-project",
+	"replace":
+	{
+		"height": 72.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": true,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 281.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}
