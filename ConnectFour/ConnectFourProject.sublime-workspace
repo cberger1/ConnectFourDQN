@@ -239,6 +239,15 @@
 	},
 	"buffers":
 	[
+		{
+			"file": "Game.py",
+			"settings":
+			{
+				"buffer_size": 5380,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		}
 	],
 	"build_system": "",
 	"build_system_choices":
@@ -294,8 +303,13 @@
 		"side_bar_visible": false,
 		"status_bar_visible": false
 	},
+	"expanded_folders":
+	[
+		"/D/Colin Berger/Documents/Python/ConnectFourDQN/ConnectFour"
+	],
 	"file_history":
 	[
+		"/D/Colin Berger/Documents/Python/ConnectFour/ConnectFourProject.sublime-project",
 		"/D/Colin Berger/Documents/Python/ConnectFour/Game.py",
 		"/C/Users/COLINB~1/AppData/Local/Temp/kite_tutorial.py",
 		"/C/Users/Colin Berger/AppData/Roaming/Sublime Text 3/Packages/KiteSublime/KiteSublime.sublime-settings",
@@ -315,7 +329,7 @@
 	],
 	"find":
 	{
-		"height": 27.0
+		"height": 32.0
 	},
 	"find_in_files":
 	{
@@ -370,14 +384,50 @@
 	"groups":
 	[
 		{
+			"selected": 0,
 			"sheets":
 			[
+				{
+					"buffer": 0,
+					"file": "Game.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 5380,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1619,
+								1619
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 932.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"file": "Sprites/icon.png",
+					"semi_transient": true,
+					"stack_index": 1,
+					"type": "image"
+				}
 			]
 		}
 	],
 	"incremental_find":
 	{
-		"height": 27.0
+		"height": 32.0
 	},
 	"input":
 	{
@@ -418,7 +468,7 @@
 	"project": "ConnectFourProject.sublime-project",
 	"replace":
 	{
-		"height": 50.0
+		"height": 72.0
 	},
 	"save_all_on_build": true,
 	"select_file":
