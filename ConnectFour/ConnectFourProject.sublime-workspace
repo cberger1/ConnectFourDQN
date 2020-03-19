@@ -243,7 +243,7 @@
 			"file": "Game.py",
 			"settings":
 			{
-				"buffer_size": 5380,
+				"buffer_size": 5951,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
@@ -305,7 +305,8 @@
 	},
 	"expanded_folders":
 	[
-		"/D/Colin Berger/Documents/Python/ConnectFourDQN/ConnectFour"
+		"/C/Users/Colin/Documents/PythonCode/ConnectFourDQN/ConnectFour",
+		"/C/Users/Colin/Documents/PythonCode/ConnectFourDQN/ConnectFour/Sprites"
 	],
 	"file_history":
 	[
@@ -393,15 +394,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 5380,
+						"buffer_size": 5951,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1619,
-								1619
+								0,
+								0
 							]
 						],
 						"settings":
@@ -410,14 +411,14 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 932.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
 					"type": "text"
 				},
 				{
-					"file": "Sprites/icon.png",
+					"file": "Sprites/YellowCoin.png",
 					"semi_transient": true,
 					"stack_index": 1,
 					"type": "image"
