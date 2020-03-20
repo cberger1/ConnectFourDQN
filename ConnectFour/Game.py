@@ -3,6 +3,7 @@ import pygame
 
 RENDER = True
 
+# Some game constants
 SPACING = 5
 DIAMETER = 100
 SIZE = (7*(SPACING+DIAMETER)+SPACING, 6*(SPACING+DIAMETER)+SPACING)
@@ -13,9 +14,9 @@ class Coin(pygame.sprite.Sprite):
 
 	def __init__(self, position, image, unique_id):
 		if not pygame.get_init():
-			pygame.init()
+			pygame.init() # Initialize if needed
 
-		pygame.sprite.Sprite.__init__(self)
+		pygame.sprite.Sprite.__init__(self) # Initialize parent class
 
 		self.image = image
 		self.rect = image.get_rect().move(position)
@@ -24,11 +25,8 @@ class Coin(pygame.sprite.Sprite):
 
 	def update(self, image, unique_id):
 		if self.id == unique_id:
-			self.set_image(image)
-
-	def set_image(self, image):
-		self.image = image
-		self.rect = image.get_rect().move(self.position)
+			self.image = image
+			self.rect = image.get_rect().move(self.position)
 
 class Grid:
 
@@ -117,14 +115,6 @@ class Player:
 					exit()
 				if event.type == pygame.MOUSEBUTTONDOWN:
 					return int((event.pos[0] - SPACING) / (SPACING + DIAMETER))
-
-class Bot:
-	
-	def __init__(self):
-		pass
-
-	def play(self):
-		pass
 
 class PlayerManager:
 
