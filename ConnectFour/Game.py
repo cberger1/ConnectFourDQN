@@ -139,7 +139,7 @@ class PlayerManager:
 
 		return self.current_player, cell
 
-class Game:
+class ConnectFourGame:
 
 	def __init__(self):
 		self.over = False
@@ -230,17 +230,18 @@ class Game:
 					exit()
 
 # Connect Four Game Example 
-game = Game()
+if __name__ == '__main__':
+	game = ConnectFourGame()
 
-player_manager = PlayerManager(Player())
+	player_manager = PlayerManager(Player())
 
-while not game.over:
-	current_player, action = player_manager.play()
+	while not game.over:
+		current_player, action = player_manager.play()
 
-	game.step(ENCODE_PLAYER[current_player], current_player, action)
-	
+		game.step(ENCODE_PLAYER[current_player], current_player, action)
+		
+		if RENDER:
+			game.render()
+
 	if RENDER:
-		game.render()
-
-if RENDER:
-	game.show_game_over_screen()
+		game.show_game_over_screen()

@@ -4,6 +4,22 @@
 		"selected_items":
 		[
 			[
+				"upd",
+				"update_target_model"
+			],
+			[
+				"ta",
+				"target_model"
+			],
+			[
+				"arg",
+				"argmax"
+			],
+			[
+				"sc",
+				"show_game_over_screen()\tfunction ⟠"
+			],
+			[
 				"pla",
 				"player_manager\tLoop ⟠"
 			],
@@ -196,10 +212,6 @@
 				"tabel_mat_rect"
 			],
 			[
-				"ta",
-				"tabel_mat"
-			],
-			[
 				"tran",
 				"transform"
 			],
@@ -243,7 +255,16 @@
 			"file": "Game.py",
 			"settings":
 			{
-				"buffer_size": 5951,
+				"buffer_size": 5961,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "Bot.py",
+			"settings":
+			{
+				"buffer_size": 2684,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
@@ -289,9 +310,25 @@
 	},
 	"console":
 	{
-		"height": 0.0,
+		"height": 185.0,
 		"history":
 		[
+			"c",
+			"b",
+			"v",
+			"a",
+			"a, b, c = x",
+			"x",
+			"*args = *(1, 2, 3)",
+			"*(w) = (1, 2, 3)",
+			"*w = (1, 2, 3)",
+			"w",
+			"*w = 5, 6, 7",
+			"*list(x)",
+			"x",
+			"*x",
+			"a, b, c = *x",
+			"x = (2,4,5)"
 		]
 	},
 	"distraction_free":
@@ -305,8 +342,8 @@
 	},
 	"expanded_folders":
 	[
-		"/C/Users/Colin/Documents/PythonCode/ConnectFourDQN/ConnectFour",
-		"/C/Users/Colin/Documents/PythonCode/ConnectFourDQN/ConnectFour/Sprites"
+		"/D/Colin Berger/Documents/Python/ConnectFourDQN/ConnectFour",
+		"/D/Colin Berger/Documents/Python/ConnectFourDQN/ConnectFour/__pycache__"
 	],
 	"file_history":
 	[
@@ -344,6 +381,7 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"Value",
 			"()]",
 			"y",
 			"x",
@@ -385,7 +423,7 @@
 	"groups":
 	[
 		{
-			"selected": 0,
+			"selected": 1,
 			"sheets":
 			[
 				{
@@ -394,15 +432,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 5951,
+						"buffer_size": 5961,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								5961,
+								5961
 							]
 						],
 						"settings":
@@ -414,14 +452,36 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 1,
 					"type": "text"
 				},
 				{
-					"file": "Sprites/YellowCoin.png",
-					"semi_transient": true,
-					"stack_index": 1,
-					"type": "image"
+					"buffer": 1,
+					"file": "Bot.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2684,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2684,
+								2684
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 1990.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
 				}
 			]
 		}

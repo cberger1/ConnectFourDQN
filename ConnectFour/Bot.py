@@ -1,16 +1,24 @@
-import numpy as np
+
 import random
+import numpy as np
 from collections import deque
+import tensorflow as tf
+#from keras.models import Sequential
+#from keras.layers import Dense, Convolution2D, Flatten
+#from keras.optimizers import Adam
+from Game import ConnectFourGame
 
 REPLAY_MEMORY_SIZE = 10_000
 BATCH_SIZE = 32
 GAMMA = 0.98
 
+UNAUTHORIZED = -1
+
 ACTION_SPACE = 7
 
 class OneHotEncoder:
 
-	def __init__(self, max_arg)
+	def __init__(self, max_arg):
 		self.max_arg = max_arg # Highest argument that can be encoded
 
 	def encode(self, arg):
@@ -23,15 +31,17 @@ class OneHotEncoder:
 
 class AgentDQN:
 
-	def __init__(self, target_model=None, replay_memory=None):
-		# Stable Model
-		if target_model != None:
-			self.target_model = target_model
-		else:
-			self.target_model = self.create_model()
-
+	def __init__(self, model=None, replay_memory=None):
 		# Unstable Model
-		self.model = self.copy_model(self.target_model)
+		if model != None:
+			self.model = model
+		else:
+			self.model = self.create_model()
+
+		# Stable Model
+		self.taget_model = self.create_model()
+		# Syncronize taget_model with model
+		self.update_target_model() 
 
 		# Replay Memory
 		if replay_memory != None:
@@ -44,15 +54,11 @@ class AgentDQN:
 		# One Hot Encoder / Decoder
 		self.codec = OneHotEncoder(ACTION_SPACE-1)
 
-	def play(self, state)
-		q_values = self.model.predict(state)
-		return np.argmax(q_values)
+	def play(self, state):
+		# First compute the Q-Values, then return the index with the highest Q-Value aka the action
+		return np.argmax(self.model.predict(state)) 
 
-	def target_play(self, state):
-		q_values = self.traget_model.predict(state)
-		return np.argmax(q_values)
-
-	def update_replay_memory(self, state, action, reward):
+	def update_replay_memory(self, state, action, reward, new_state):
 		self.replay_memory.append((state, action, reward))
 
 	def train(self, compute_new_state):
@@ -62,23 +68,41 @@ class AgentDQN:
 		y = [] 
 
 		for i in range(BATCH_SIZE):
-			my_state, my_action, reward = *sample[i]
+			state, action, reward, opponent_state = sample[i]
 
-			opponent_state = compute_new_state(my_state, my_action)
-			opponent_action = self.target_play(opponent_state)
+			opponent_action = np.argmax(self.target_model.predict(new_state)) # Opponent makes the best possible action
 
-			my_new_state = compute_new_state(opponent_state, opponent_action)
+			new_state = compute_new_state(opponent_state, opponent_action) # New State after opponent has played
 
-			target = reward + GAMMA * max(self.target_model.predict(my_new_state))
+			target = reward + GAMMA * max(self.target_model.predict(my_new_state)) # The target Q-Value of the played action
 
-			x.append(my_state)
-			y.append(target)
+			q_values = self.model.predict(new_state)[0]
+
+			for j in range(ACTION_SPACE):
+				if j == action:
+					q_values[j] == target
+
+				if new_state[j] != 0:
+					q_values[j] == UNAUTHORIZED
+
+			x.append(state)
+			y.append(q_values)
 
 		self.model.fit(x, y, batch=BATCH_SIZE)
 
 	def create_model(self, model):
-		pass
+		model = Sequential()
 
-	def copy_model(self, model):
-		pass
+		model.add(Convolution2D(8, (4,4), input_shape=(7,6)))
+		model.add(Flatten())
+		model.add(Dense(32))
+		model.add(Dense(16))
+		model.add(Dense(ACTION_SPACE))
+
+		model.compile(optimizer=Adam(), loss="mse")
+
+		return model
+
+	def update_target_model(self):
+		self.target_model.set_weights(self.model.get_weights())
 
