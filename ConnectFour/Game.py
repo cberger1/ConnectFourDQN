@@ -1,5 +1,6 @@
 import numpy as np
 import pygame
+import time
 
 RENDER = True
 
@@ -38,16 +39,16 @@ class Coin(pygame.sprite.Sprite):
 class Grid:
 
 	def __init__(self):
-		self.grid = np.zeros((7,6)) # Initialize grid with zeros
+		self.grid = np.zeros((7, 6, 1)) # Initialize grid with zeros
 		self.coin_played = 0 # Keeps track of how many coins are already played
 
 	def play_coin(self, value, column):
-		if self.grid[column][0] != 0: # No more free space in that column
+		if self.grid[column][0][0] != 0: # No more free space in that column
 			return None
 		else:
 			for row in range(5, -1, -1):
-				if self.grid[column][row] == 0:
-					self.grid[column][row] = value # Assign given value
+				if self.grid[column][row][0] == 0:
+					self.grid[column][row][0] = value # Assign given value
 					self.coin_played += 1 # Increment the played coin counter
 					return (column, row)
 
@@ -61,7 +62,7 @@ class Grid:
 		# Horizontal - 
 		counter = 0
 		for column in range(0, 7):
-			if self.grid[column][cell[1]] == value:
+			if self.grid[column][cell[1]][0] == value:
 				counter += 1
 			else:
 				counter = 0
@@ -72,7 +73,7 @@ class Grid:
 		# Vertical |
 		counter = 0
 		for row in range(0, 6):
-			if self.grid[cell[0]][row] == value:
+			if self.grid[cell[0]][row][0] == value:
 				counter += 1
 			else:
 				counter = 0
@@ -83,7 +84,7 @@ class Grid:
 		# Diagonal \
 		counter = 0
 		for i in range(-min(cell), min(6 - cell[0], 5 - cell[1]) + 1):
-			if self.grid[cell[0]+i][cell[1]+i] == value:
+			if self.grid[cell[0]+i][cell[1]+i][0] == value:
 				counter += 1
 			else:
 				counter = 0
@@ -94,7 +95,7 @@ class Grid:
 		# Diagonal /
 		counter = 0
 		for i in range(-min(cell[0], 5 - cell[1]), min(6 - cell[0], cell[1]) + 1):
-			if self.grid[cell[0]+i][cell[1]-i] == value:
+			if self.grid[cell[0]+i][cell[1]-i][0] == value:
 				counter += 1
 			else:
 				counter = 0
@@ -128,7 +129,7 @@ class Player:
 
 class PlayerManager:
 
-	def __init__(self, *args, starting_player=0):
+	def __init__(self, *args, delay=None, starting_player=0):
 		self.players = []
 		self.current_player = starting_player # 0 or 1
 		self.index = starting_player # 0 or 1
@@ -187,18 +188,28 @@ class ConnectFourGame:
 
 			self.render()
 	
+	def reset(self):
+		self.over = False
+		self.winner = None
+		self.grid = Grid()
+
+		return self.get_state()
+
 	def cell_to_position(self, cell):
 		return int(cell[0] * (SPACING + DIAMETER) + SPACING), int(cell[1] * (SPACING + DIAMETER) + SPACING)
 
 	def cell_to_id(self, cell):
 		return 10 * cell[0] + cell[1]
 
+	def compute_next_state(self, state, action):
+		pass
+
 	def step(self, value, player, action):
 		cell = self.grid.play_coin(value, action) # Play
 
 		new_state = self.get_state()
 
-		if RENDER:
+		if RENDER and cell != None:
 			self.slot_sprites.update(self.images[player], self.cell_to_id(cell))
 
 		if cell == None:
@@ -213,6 +224,8 @@ class ConnectFourGame:
 			self.over = True
 			return DRAW, new_state
 
+		return ACTION, new_state
+
 	def get_state(self):
 		return self.grid.get_grid()
 
@@ -221,28 +234,46 @@ class ConnectFourGame:
 		self.screen.blit(self.board, (0,0))
 		pygame.display.flip()
 
-	def show_game_over_screen(self):
-		font = pygame.font.Font(None, 128) # Get the default font
+	def pause(self, seconds):
+		if RENDER:
+			start = time.time()
+			while (time.time() - start) < seconds:
+				self.clock.tick(30) # Show at most 30 FPS
 
+				# Handle events
+				for event in pygame.event.get():
+					if event.type == pygame.QUIT:
+						exit()
+		else:
+			time.sleep(seconds)
+
+	def show_game_over_screen(self):
 		if self.winner == None:
 			message = "It's a draw!"
 		else:
 			message = "Player " + str(int(self.winner)) + " wins!"
+		
+		if RENDER:
+			font = pygame.font.Font(None, 128) # Get the default font
 
-		text = font.render(message, True, (255,255,255), (0,0,0))
-		text_rect = text.get_rect()
-		text_rect.center = (SIZE[0] / 2, SIZE[1] / 2) # Center the text
+			text = font.render(message, True, (255,255,255), (0,0,0))
+			text_rect = text.get_rect()
+			text_rect.center = (SIZE[0] / 2, SIZE[1] / 2) # Center the text
 
-		self.screen.blit(text, text_rect) # Draw the text on the screen
-		pygame.display.flip() # Update window
+			self.screen.blit(text, text_rect) # Draw the text on the screen
+			pygame.display.flip() # Update window
 
-		while True:
-			self.clock.tick(30) # Show at most 30 FPS
+			while True:
+				self.clock.tick(30) # Show at most 30 FPS
 
-			# Handle events
-			for event in pygame.event.get():
-				if event.type == pygame.QUIT:
-					exit()
+				# Handle events
+				for event in pygame.event.get():
+					if event.type == pygame.QUIT:
+						exit()
+					if event.type == pygame.MOUSEBUTTONDOWN:
+						return
+		else:
+			print(message, "\n")
 
 # Connect Four Game Example 
 if __name__ == '__main__':
