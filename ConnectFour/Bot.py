@@ -1,12 +1,11 @@
-
 import random
 import numpy as np
 from collections import deque
 import tensorflow as tf
-#from keras.models import Sequential
-#from keras.layers import Dense, Convolution2D, Flatten
-#from keras.optimizers import Adam
-from Game import ConnectFourGame
+from keras.models import Sequential
+from keras.layers import Dense, Convolution2D, Flatten
+from keras.optimizers import Adam
+from Game import *
 
 REPLAY_MEMORY_SIZE = 10_000
 BATCH_SIZE = 32
@@ -29,7 +28,7 @@ class OneHotEncoder:
 	def decode(self, array):
 		return np.argmax(array)
 
-class AgentDQN:
+class AgentDQN(Player):
 
 	def __init__(self, model=None, replay_memory=None):
 		# Unstable Model
@@ -39,7 +38,7 @@ class AgentDQN:
 			self.model = self.create_model()
 
 		# Stable Model
-		self.taget_model = self.create_model()
+		self.target_model = self.create_model()
 		# Syncronize taget_model with model
 		self.update_target_model() 
 
@@ -47,15 +46,14 @@ class AgentDQN:
 		if replay_memory != None:
 			self.replay_memory = replay_memory
 		else:
-			self.replay_memory = deque()
-
-		self.replay_memory.maxlen = REPLAY_MEMORY_SIZE
+			self.replay_memory = deque(maxlen=REPLAY_MEMORY_SIZE)
 
 		# One Hot Encoder / Decoder
 		self.codec = OneHotEncoder(ACTION_SPACE-1)
 
 	def play(self, state):
 		# First compute the Q-Values, then return the index with the highest Q-Value aka the action
+		print("input_shape : ", np.shape(state), "\n")
 		return np.argmax(self.model.predict(state)) 
 
 	def update_replay_memory(self, state, action, reward, new_state):
@@ -90,19 +88,45 @@ class AgentDQN:
 
 		self.model.fit(x, y, batch=BATCH_SIZE)
 
-	def create_model(self, model):
-		model = Sequential()
+	def create_model(self, model=None):
+		if model == None:
+			model = Sequential()
 
-		model.add(Convolution2D(8, (4,4), input_shape=(7,6)))
-		model.add(Flatten())
-		model.add(Dense(32))
-		model.add(Dense(16))
-		model.add(Dense(ACTION_SPACE))
+			model.add(Convolution2D(8, (4,4))) # , input_shape=(7,6)
+			model.add(Flatten())
+			model.add(Dense(32))
+			model.add(Dense(16))
+			model.add(Dense(ACTION_SPACE))
 
-		model.compile(optimizer=Adam(), loss="mse")
+			model.compile(optimizer=Adam(), loss="mse")
 
 		return model
+
 
 	def update_target_model(self):
 		self.target_model.set_weights(self.model.get_weights())
 
+# Connect Four Game Example 
+if __name__ == '__main__':
+	env = ConnectFourGame()
+
+	agent = AgentDQN()
+
+	player_manager = PlayerManager(agent)
+
+	state = env.get_state()
+
+	while not env.over:
+		current_player, action = player_manager.play(state)
+
+		reward, new_state = env.step(ENCODE_PLAYER[current_player], current_player, action)
+
+		agent.update_replay_memory(state, action, reward, new_state)
+
+		state = new_state
+
+		if RENDER:
+			env.render()
+
+	if RENDER:
+		env.show_game_over_screen()

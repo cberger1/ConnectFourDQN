@@ -10,6 +10,13 @@ SIZE = (7*(SPACING+DIAMETER)+SPACING, 6*(SPACING+DIAMETER)+SPACING)
 
 ENCODE_PLAYER = [1, -1] # The first element of ENCODE_PLAYER is attributed to the first player etc.
 
+# Rewards
+UNAUTHORIZED = -1
+ACTION = -0.01
+WIN = 1
+DRAW = 0.5
+LOSE = -1
+
 class Coin(pygame.sprite.Sprite):
 
 	def __init__(self, position, image, unique_id):
@@ -43,6 +50,9 @@ class Grid:
 					self.grid[column][row] = value # Assign given value
 					self.coin_played += 1 # Increment the played coin counter
 					return (column, row)
+
+	def get_grid(self):
+		return self.grid
 
 	def is_winning_coin(self, cell, value):
 		if self.coin_played < 7: # It's impossible that some one has already won
@@ -124,18 +134,18 @@ class PlayerManager:
 		self.index = starting_player # 0 or 1
 
 		for arg in args:
-			if isinstance(arg, Player) or isinstance(arg, Bot):
+			if isinstance(arg, Player):
 				self.players.append(arg)
 
 		self.one_player = len(self.players) == 1
 	
-	def play(self):
+	def play(self, *args, **kwargs):
 		if not self.one_player:
 			self.index = not self.index
 		
 		self.current_player = not self.current_player # 0 becomes 1 and vice versa
 
-		cell = self.players[self.index].play()
+		cell = self.players[self.index].play(*args, **kwargs)
 
 		return self.current_player, cell
 
@@ -184,22 +194,27 @@ class ConnectFourGame:
 		return 10 * cell[0] + cell[1]
 
 	def step(self, value, player, action):
-		cell = self.grid.play_coin(value, action)
+		cell = self.grid.play_coin(value, action) # Play
+
+		new_state = self.get_state()
 
 		if RENDER:
 			self.slot_sprites.update(self.images[player], self.cell_to_id(cell))
 
 		if cell == None:
-			return
+			return UNAUTHORIZED, new_state
 
 		if self.grid.is_winning_coin(cell, value):
 			self.winner = value
 			self.over = True
-			return
+			return  WIN, new_state
 		
 		if self.grid.is_full():
 			self.over = True
-			return
+			return DRAW, new_state
+
+	def get_state(self):
+		return self.grid.get_grid()
 
 	def render(self):
 		self.slot_sprites.draw(self.board)
@@ -238,7 +253,7 @@ if __name__ == '__main__':
 	while not game.over:
 		current_player, action = player_manager.play()
 
-		game.step(ENCODE_PLAYER[current_player], current_player, action)
+		reward, new_state = game.step(ENCODE_PLAYER[current_player], current_player, action)
 		
 		if RENDER:
 			game.render()
