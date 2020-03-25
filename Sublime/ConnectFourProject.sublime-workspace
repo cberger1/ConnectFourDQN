@@ -4,6 +4,18 @@
 		"selected_items":
 		[
 			[
+				"Pla",
+				"PlayerManager\ttype ⟠"
+			],
+			[
+				"u",
+				"update_replay_memory(…)\tfunction ⟠"
+			],
+			[
+				"ge",
+				"get_state"
+			],
+			[
 				"upd",
 				"update_target_model"
 			],
@@ -252,20 +264,18 @@
 	"buffers":
 	[
 		{
-			"file": "Game.py",
+			"file": "/D/Colin Berger/Documents/Python/ConnectFourDQN/game.py",
 			"settings":
 			{
-				"buffer_size": 5961,
-				"encoding": "UTF-8",
+				"buffer_size": 6914,
 				"line_ending": "Windows"
 			}
 		},
 		{
-			"file": "Bot.py",
+			"file": "/D/Colin Berger/Documents/Python/ConnectFourDQN/bot.py",
 			"settings":
 			{
-				"buffer_size": 2684,
-				"encoding": "UTF-8",
+				"buffer_size": 4306,
 				"line_ending": "Windows"
 			}
 		}
@@ -342,11 +352,13 @@
 	},
 	"expanded_folders":
 	[
-		"/D/Colin Berger/Documents/Python/ConnectFourDQN/ConnectFour",
-		"/D/Colin Berger/Documents/Python/ConnectFourDQN/ConnectFour/__pycache__"
+		"/D/Colin Berger/Documents/Python/ConnectFourDQN"
 	],
 	"file_history":
 	[
+		"/D/Colin Berger/Documents/Python/ConnectFourDQN/Sublime/ConnectFourProject.sublime-project",
+		"/D/Colin Berger/Documents/Python/ConnectFourDQN/Sublime/bot.py",
+		"/D/Colin Berger/Documents/Python/ConnectFourDQN/Sublime/game.py",
 		"/D/Colin Berger/Documents/Python/ConnectFour/ConnectFourProject.sublime-project",
 		"/D/Colin Berger/Documents/Python/ConnectFour/Game.py",
 		"/C/Users/COLINB~1/AppData/Local/Temp/kite_tutorial.py",
@@ -428,19 +440,19 @@
 			[
 				{
 					"buffer": 0,
-					"file": "Game.py",
+					"file": "/D/Colin Berger/Documents/Python/ConnectFourDQN/game.py",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 5961,
+						"buffer_size": 6914,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								5961,
-								5961
+								0,
+								0
 							]
 						],
 						"settings":
@@ -457,27 +469,28 @@
 				},
 				{
 					"buffer": 1,
-					"file": "Bot.py",
+					"file": "/D/Colin Berger/Documents/Python/ConnectFourDQN/bot.py",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 2684,
+						"buffer_size": 4306,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								2684,
-								2684
+								0,
+								0
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/Python/Python.sublime-syntax"
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 1868.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
@@ -492,7 +505,7 @@
 	},
 	"input":
 	{
-		"height": 0.0
+		"height": 43.0
 	},
 	"layout":
 	{
