@@ -5,7 +5,7 @@ import tensorflow as tf
 from keras.models import Sequential
 from keras.layers import Dense, Convolution2D, Flatten
 from keras.optimizers import Adam
-from Game import *
+from game import *
 
 EPISODES = 1_000
 UPDATE_TARGET_MODEL_EVERY = 200

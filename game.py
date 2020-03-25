@@ -1,22 +1,46 @@
 import numpy as np
 import pygame
 import time
+from grid import Grid
+from player import Player, PlayerManager
 
-RENDER = True
+class GameParam:
+	RENDER = True
 
-# Some game constants
-SPACING = 5
-DIAMETER = 100
-SIZE = (7*(SPACING+DIAMETER)+SPACING, 6*(SPACING+DIAMETER)+SPACING)
+	SPACING = 5
+	DIAMETER = 100
+	SIZE = (7*(SPACING+DIAMETER)+SPACING, 6*(SPACING+DIAMETER)+SPACING)
 
-ENCODE_PLAYER = [1, -1] # The first element of ENCODE_PLAYER is attributed to the first player etc.
+	ENCODE_PLAYER = [1, -1] # The first element of ENCODE_PLAYER is attributed to the first player etc.
 
-# Rewards
-UNAUTHORIZED = -1
-ACTION = -0.01
-WIN = 1
-DRAW = 0.5
-LOSE = -1
+	# Rewards
+	UNAUTHORIZED = -1
+	ACTION = -0.01
+	WIN = 1
+	DRAW = 0.5
+	LOSE = -1
+
+	def __init__(self, *args, **kwargs):
+		# Setting passed values
+		for key, value in kwargs.items():
+			if key in locals():
+				self.locals()[key] = value
+
+# RENDER = True
+
+# # Some game constants
+# SPACING = 5
+# DIAMETER = 100
+# SIZE = (7*(SPACING+DIAMETER)+SPACING, 6*(SPACING+DIAMETER)+SPACING)
+
+# ENCODE_PLAYER = [1, -1] # The first element of ENCODE_PLAYER is attributed to the first player etc.
+
+# # Rewards
+# UNAUTHORIZED = -1
+# ACTION = -0.01
+# WIN = 1
+# DRAW = 0.5
+# LOSE = -1
 
 class Coin(pygame.sprite.Sprite):
 
@@ -32,132 +56,24 @@ class Coin(pygame.sprite.Sprite):
 		self.id = unique_id
 
 	def update(self, image, unique_id):
-		if self.id == unique_id:
+		# Updates only if the ids matches or if unique_id is None -> means every coin of the group gets updated
+		if self.id == unique_id or unique_id == None:
 			self.image = image
 			self.rect = image.get_rect().move(self.position)
 
-class Grid:
-
-	def __init__(self):
-		self.grid = np.zeros((7, 6, 1)) # Initialize grid with zeros
-		self.coin_played = 0 # Keeps track of how many coins are already played
-
-	def play_coin(self, value, column):
-		if self.grid[column][0][0] != 0: # No more free space in that column
-			return None
-		else:
-			for row in range(5, -1, -1):
-				if self.grid[column][row][0] == 0:
-					self.grid[column][row][0] = value # Assign given value
-					self.coin_played += 1 # Increment the played coin counter
-					return (column, row)
-
-	def get_grid(self):
-		return self.grid
-
-	def is_winning_coin(self, cell, value):
-		if self.coin_played < 7: # It's impossible that some one has already won
-			return False
-
-		# Horizontal - 
-		counter = 0
-		for column in range(0, 7):
-			if self.grid[column][cell[1]][0] == value:
-				counter += 1
-			else:
-				counter = 0
-
-			if counter == 4:
-				return True
-
-		# Vertical |
-		counter = 0
-		for row in range(0, 6):
-			if self.grid[cell[0]][row][0] == value:
-				counter += 1
-			else:
-				counter = 0
-
-			if counter == 4:
-				return True
-
-		# Diagonal \
-		counter = 0
-		for i in range(-min(cell), min(6 - cell[0], 5 - cell[1]) + 1):
-			if self.grid[cell[0]+i][cell[1]+i][0] == value:
-				counter += 1
-			else:
-				counter = 0
-
-			if counter == 4:
-				return True
-
-		# Diagonal /
-		counter = 0
-		for i in range(-min(cell[0], 5 - cell[1]), min(6 - cell[0], cell[1]) + 1):
-			if self.grid[cell[0]+i][cell[1]-i][0] == value:
-				counter += 1
-			else:
-				counter = 0
-
-			if counter == 4:
-				return True
-
-		return False
-
-	def is_full(self):
-		return self.coin_played == 42 # 7*6
-
-class Player:
-
-	def __init__(self):
-		if not pygame.get_init():
-			pygame.init() # Initialize if needed
-
-		self.clock = pygame.time.Clock()
-
-	def play(self, *argv, **kwargs):
-		while True and RENDER:
-			self.clock.tick(30) # Show at most 30 FPS
-
-			# Handle events
-			for event in pygame.event.get():
-				if event.type == pygame.QUIT:
-					exit()
-				if event.type == pygame.MOUSEBUTTONDOWN:
-					return int((event.pos[0] - SPACING) / (SPACING + DIAMETER))
-
-class PlayerManager:
-
-	def __init__(self, *args, delay=None, starting_player=0):
-		self.players = []
-		self.current_player = starting_player # 0 or 1
-		self.index = starting_player # 0 or 1
-
-		for arg in args:
-			if isinstance(arg, Player):
-				self.players.append(arg)
-
-		self.one_player = len(self.players) == 1
-	
-	def play(self, *args, **kwargs):
-		if not self.one_player:
-			self.index = not self.index
-		
-		self.current_player = not self.current_player # 0 becomes 1 and vice versa
-
-		cell = self.players[self.index].play(*args, **kwargs)
-
-		return self.current_player, cell
-
 class ConnectFourGame:
 
-	def __init__(self):
+	def __init__(self, param=None):
 		self.over = False
 		self.winner = None
 		self.grid = Grid()
 
-		if RENDER:
+		if param == None:
+			self.param = GameParam() # If param is None, default values will be used
+		else:
+			self.param = param
+
+		if self.param.RENDER:
 			if pygame.get_init():
 				pygame.init() # Initialize if needed
 
@@ -171,7 +87,7 @@ class ConnectFourGame:
 
 			# Scale images
 			for i in range(3):
-				self.images[i] = pygame.transform.scale(self.images[i], (DIAMETER,DIAMETER))
+				self.images[i] = pygame.transform.scale(self.images[i], (self.param.DIAMETER,self.param.DIAMETER))
 
 			self.screen = pygame.display.set_mode(SIZE)
 			pygame.display.set_caption("ConnectFourGame")
@@ -193,10 +109,13 @@ class ConnectFourGame:
 		self.winner = None
 		self.grid = Grid()
 
+		if self.param.RENDER:
+			self.slot_sprites.update(self.images[-1], None) # Set every coin back to empty
+
 		return self.get_state()
 
 	def cell_to_position(self, cell):
-		return int(cell[0] * (SPACING + DIAMETER) + SPACING), int(cell[1] * (SPACING + DIAMETER) + SPACING)
+		return int(cell[0] * (self.param.SPACING + self.param.DIAMETER) + self.param.SPACING), int(cell[1] * (self.param.SPACING + self.param.DIAMETER) + self.param.SPACING)
 
 	def cell_to_id(self, cell):
 		return 10 * cell[0] + cell[1]
@@ -235,7 +154,7 @@ class ConnectFourGame:
 		pygame.display.flip()
 
 	def pause(self, seconds):
-		if RENDER:
+		if self.param.RENDER:
 			start = time.time()
 			while (time.time() - start) < seconds:
 				self.clock.tick(30) # Show at most 30 FPS
