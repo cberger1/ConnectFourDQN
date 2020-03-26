@@ -2,22 +2,35 @@ import pygame
 
 class Player:
 
-	def __init__(self):
+	def __init__(self, param=None):
 		if not pygame.get_init():
 			pygame.init() # Initialize if needed
 
 		self.clock = pygame.time.Clock()
 
-	def play(self, *argv, **kwargs):
-		while True and RENDER:
-			self.clock.tick(30) # Show at most 30 FPS
+		if param == None:
+			self.param = Settings() # If param is None, default values will be used
+		else:
+			self.param = param
 
-			# Handle events
-			for event in pygame.event.get():
-				if event.type == pygame.QUIT:
-					exit()
-				if event.type == pygame.MOUSEBUTTONDOWN:
-					return int((event.pos[0] - SPACING) / (SPACING + DIAMETER))
+	def play(self, *argv, **kwargs):
+		if self.param["RENDER"]:
+			while True:
+				self.clock.tick(30) # Show at most 30 FPS
+
+				# Handle events
+				for event in pygame.event.get():
+					if event.type == pygame.QUIT:
+						exit()
+					if event.type == pygame.MOUSEBUTTONDOWN:
+						return int((event.pos[0] - self.param["SPACING"]) / (self.param["SPACING"] + self.param["DIAMETER"]))
+		else:
+			action = -1
+
+			while action > 6 or action < 0:
+				action = int(input("Chose an action [Number between 1 - 7] : ")) - 1
+
+			return action
 
 class PlayerManager:
 

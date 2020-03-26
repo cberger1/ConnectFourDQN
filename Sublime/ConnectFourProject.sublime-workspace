@@ -4,6 +4,18 @@
 		"selected_items":
 		[
 			[
+				"G",
+				"GameParam\ttype ⟠"
+			],
+			[
+				"k",
+				"kwargs\tdict ⟠"
+			],
+			[
+				"Player",
+				"PlayerManager"
+			],
+			[
 				"Pla",
 				"PlayerManager\ttype ⟠"
 			],
@@ -267,7 +279,35 @@
 			"file": "/D/Colin Berger/Documents/Python/ConnectFourDQN/game.py",
 			"settings":
 			{
-				"buffer_size": 6914,
+				"buffer_size": 6027,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"contents": "pygame 1.9.6\nHello from the pygame community. https://www.pygame.org/contribute.html\nChose an action [Number between 1 - 7] : 9\nChose an action [Number between 1 - 7] : 3\nplayed\nChose an action [Number between 1 - 7] : 7\nplayed\nChose an action [Number between 1 - 7] : 6\nplayed\nChose an action [Number between 1 - 7] : 1\nplayed\nChose an action [Number between 1 - 7] : 3\nplayed\nChose an action [Number between 1 - 7] : 4\nplayed\nChose an action [Number between 1 - 7] : 5\nplayed\nChose an action [Number between 1 - 7] : 6\nplayed\nChose an action [Number between 1 - 7] : ",
+			"settings":
+			{
+				"buffer_size": 569,
+				"line_ending": "Windows",
+				"name": "*REPL* [python]",
+				"scratch": true
+			}
+		},
+		{
+			"file": "/D/Colin Berger/Documents/Python/ConnectFourDQN/player.py",
+			"settings":
+			{
+				"buffer_size": 1406,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/D/Colin Berger/Documents/Python/ConnectFourDQN/grid.py",
+			"settings":
+			{
+				"buffer_size": 1690,
+				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
 		},
@@ -276,6 +316,7 @@
 			"settings":
 			{
 				"buffer_size": 4306,
+				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
 		}
@@ -307,6 +348,10 @@
 		"last_filter": "",
 		"selected_items":
 		[
+			[
+				"Package Control: install",
+				"Package Control: Install Package"
+			],
 			[
 				"Package Control: ",
 				"Package Control: Install Package"
@@ -356,6 +401,8 @@
 	],
 	"file_history":
 	[
+		"/D/Colin Berger/Documents/Python/ConnectFourDQN/player.py",
+		"/C/Users/Colin Berger/AppData/Roaming/Sublime Text 3/Packages/SublimeREPL/SublimeREPL.sublime-settings",
 		"/D/Colin Berger/Documents/Python/ConnectFourDQN/Sublime/ConnectFourProject.sublime-project",
 		"/D/Colin Berger/Documents/Python/ConnectFourDQN/Sublime/bot.py",
 		"/D/Colin Berger/Documents/Python/ConnectFourDQN/Sublime/game.py",
@@ -379,7 +426,7 @@
 	],
 	"find":
 	{
-		"height": 32.0
+		"height": 43.0
 	},
 	"find_in_files":
 	{
@@ -393,6 +440,15 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"SIZE",
+			"self.param.DIAMETER",
+			"self.param.SPACING",
+			"self.param.RENDER",
+			"ENCODE_PLAYER",
+			"ENCODE",
+			"DIAMETER",
+			"SPACING",
+			"RENDER",
 			"Value",
 			"()]",
 			"y",
@@ -415,6 +471,12 @@
 		"regex": false,
 		"replace_history":
 		[
+			"self.param[\"DIAMETER\"]",
+			"self.param[\"SPACING\"]",
+			"self.param[\"RENDER\"]",
+			"self.param.DIAMETER",
+			"self.param.SPACING",
+			"self.param.RENDER",
 			"row",
 			"column",
 			"x",
@@ -444,7 +506,95 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 6914,
+						"buffer_size": 6027,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								5818,
+								5818
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 4224.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 569,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								569,
+								569
+							]
+						],
+						"settings":
+						{
+							"auto_complete": true,
+							"auto_indent": false,
+							"detect_indentation": false,
+							"gutter": false,
+							"history_arrows": true,
+							"indent_subsequent_lines": false,
+							"line_numbers": false,
+							"repl": true,
+							"repl_external_id": "python",
+							"repl_id": "63f9635c8e094be2b4c9f6b8089d335a",
+							"repl_restart_args":
+							{
+								"cmd":
+								[
+									"python",
+									"-u",
+									"$file_basename"
+								],
+								"cwd": "$file_path",
+								"encoding": "utf8",
+								"extend_env":
+								{
+									"PYTHONIOENCODING": "utf-8"
+								},
+								"external_id": "python",
+								"syntax": "Packages/Python/Python.tmLanguage",
+								"type": "subprocess"
+							},
+							"repl_sublime2": false,
+							"smart_indent": false,
+							"spell_check": false,
+							"syntax": "Packages/Python/Python.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "/D/Colin Berger/Documents/Python/ConnectFourDQN/player.py",
+					"semi_transient": true,
+					"settings":
+					{
+						"buffer_size": 1406,
 						"regions":
 						{
 						},
@@ -464,11 +614,40 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 2,
 					"type": "text"
 				},
 				{
-					"buffer": 1,
+					"buffer": 3,
+					"file": "/D/Colin Berger/Documents/Python/ConnectFourDQN/grid.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1690,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								297,
+								297
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
 					"file": "/D/Colin Berger/Documents/Python/ConnectFourDQN/bot.py",
 					"semi_transient": false,
 					"settings":
@@ -493,7 +672,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 4,
 					"type": "text"
 				}
 			]
@@ -532,7 +711,7 @@
 	"menu_visible": true,
 	"output.exec":
 	{
-		"height": 263.0
+		"height": 266.0
 	},
 	"output.find_results":
 	{
@@ -542,7 +721,7 @@
 	"project": "ConnectFourProject.sublime-project",
 	"replace":
 	{
-		"height": 72.0
+		"height": 78.0
 	},
 	"save_all_on_build": true,
 	"select_file":

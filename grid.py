@@ -7,6 +7,9 @@ class Grid:
 		self.coin_played = 0 # Keeps track of how many coins are already played
 
 	def play_coin(self, value, column):
+		if column == None:
+			raise Exception("column can't equal to None!")
+
 		if self.grid[column][0][0] != 0: # No more free space in that column
 			return None
 		else:

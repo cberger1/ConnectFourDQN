@@ -4,27 +4,49 @@ import time
 from grid import Grid
 from player import Player, PlayerManager
 
-class GameParam:
-	RENDER = True
+class Settings:
+	
+	const = {
+		# Render
+		"RENDER" : True,
+		# Board settings
+		"SPACING" : 5,
+		"DIAMETER" : 100,
+		"SIZE" : (740 , 636),
+		# Encoding
+		"ENCODE_PLAYER" : [1, -1],
+		# Rewards
+		"UNAUTHORIZED" : -1,
+		"ACTION" : -0.01,
+		"WIN" : 1,
+		"DRAW" : 0.5,
+		"LOSE" : -1,
+	}
 
-	SPACING = 5
-	DIAMETER = 100
-	SIZE = (7*(SPACING+DIAMETER)+SPACING, 6*(SPACING+DIAMETER)+SPACING)
+	def __init__(self, const=None, **kwargs):
+		
+		if const == None:
+			for key, value in kwargs.items():
+				if key in self.const:
+					self.const[key] = value
+		else:
+			self.const = const
 
-	ENCODE_PLAYER = [1, -1] # The first element of ENCODE_PLAYER is attributed to the first player etc.
+		self.update_size()
 
-	# Rewards
-	UNAUTHORIZED = -1
-	ACTION = -0.01
-	WIN = 1
-	DRAW = 0.5
-	LOSE = -1
+	def __getitem__(self, key):
+		return self.const[key]
 
-	def __init__(self, *args, **kwargs):
-		# Setting passed values
-		for key, value in kwargs.items():
-			if key in locals():
-				self.locals()[key] = value
+	def __setitem__(self, key, value):
+		self.const[key] = value
+
+	def __contains__(self, item):
+		return item in self.const
+
+	def update_size(self):
+		x = int(7 * (self.const["SPACING"] + self.const["DIAMETER"]) + self.const["SPACING"])
+		y = int(6 * (self.const["SPACING"] + self.const["DIAMETER"]) + self.const["SPACING"])
+		self.const["SIZE"] = (x, y)
 
 # RENDER = True
 
@@ -69,11 +91,11 @@ class ConnectFourGame:
 		self.grid = Grid()
 
 		if param == None:
-			self.param = GameParam() # If param is None, default values will be used
+			self.param = Settings() # If param is None, default values will be used
 		else:
 			self.param = param
 
-		if self.param.RENDER:
+		if self.param["RENDER"]:
 			if pygame.get_init():
 				pygame.init() # Initialize if needed
 
@@ -87,13 +109,13 @@ class ConnectFourGame:
 
 			# Scale images
 			for i in range(3):
-				self.images[i] = pygame.transform.scale(self.images[i], (self.param.DIAMETER,self.param.DIAMETER))
+				self.images[i] = pygame.transform.scale(self.images[i], (self.param["DIAMETER"],self.param["DIAMETER"]))
 
-			self.screen = pygame.display.set_mode(SIZE)
+			self.screen = pygame.display.set_mode(self.param["SIZE"])
 			pygame.display.set_caption("ConnectFourGame")
 			pygame.display.set_icon(pygame.image.load('Sprites/icon.png'))
 
-			self.board = pygame.Surface(SIZE)
+			self.board = pygame.Surface(self.param["SIZE"])
 			self.board.fill((0, 0, 255))
 
 			self.slot_sprites = pygame.sprite.Group()
@@ -109,13 +131,13 @@ class ConnectFourGame:
 		self.winner = None
 		self.grid = Grid()
 
-		if self.param.RENDER:
+		if self.param["RENDER"]:
 			self.slot_sprites.update(self.images[-1], None) # Set every coin back to empty
 
 		return self.get_state()
 
 	def cell_to_position(self, cell):
-		return int(cell[0] * (self.param.SPACING + self.param.DIAMETER) + self.param.SPACING), int(cell[1] * (self.param.SPACING + self.param.DIAMETER) + self.param.SPACING)
+		return int(cell[0] * (self.param["SPACING"] + self.param["DIAMETER"]) + self.param["SPACING"]), int(cell[1] * (self.param["SPACING"] + self.param["DIAMETER"]) + self.param["SPACING"])
 
 	def cell_to_id(self, cell):
 		return 10 * cell[0] + cell[1]
@@ -128,22 +150,22 @@ class ConnectFourGame:
 
 		new_state = self.get_state()
 
-		if RENDER and cell != None:
+		if self.param["RENDER"] and cell != None:
 			self.slot_sprites.update(self.images[player], self.cell_to_id(cell))
 
 		if cell == None:
-			return UNAUTHORIZED, new_state
+			return self.param["UNAUTHORIZED"], new_state
 
 		if self.grid.is_winning_coin(cell, value):
 			self.winner = value
 			self.over = True
-			return  WIN, new_state
+			return  self.param["WIN"], new_state
 		
 		if self.grid.is_full():
 			self.over = True
-			return DRAW, new_state
+			return self.param["DRAW"], new_state
 
-		return ACTION, new_state
+		return self.param["ACTION"], new_state
 
 	def get_state(self):
 		return self.grid.get_grid()
@@ -154,7 +176,7 @@ class ConnectFourGame:
 		pygame.display.flip()
 
 	def pause(self, seconds):
-		if self.param.RENDER:
+		if self.param["RENDER"]:
 			start = time.time()
 			while (time.time() - start) < seconds:
 				self.clock.tick(30) # Show at most 30 FPS
@@ -172,12 +194,12 @@ class ConnectFourGame:
 		else:
 			message = "Player " + str(int(self.winner)) + " wins!"
 		
-		if RENDER:
+		if self.param["RENDER"]:
 			font = pygame.font.Font(None, 128) # Get the default font
 
 			text = font.render(message, True, (255,255,255), (0,0,0))
 			text_rect = text.get_rect()
-			text_rect.center = (SIZE[0] / 2, SIZE[1] / 2) # Center the text
+			text_rect.center = (self.param["SIZE"][0] / 2, self.param["SIZE"][1] / 2) # Center the text
 
 			self.screen.blit(text, text_rect) # Draw the text on the screen
 			pygame.display.flip() # Update window
@@ -196,17 +218,23 @@ class ConnectFourGame:
 
 # Connect Four Game Example 
 if __name__ == '__main__':
-	game = ConnectFourGame()
+	param = Settings(RENDER=False)
 
-	player_manager = PlayerManager(Player())
+	game = ConnectFourGame(param)
+
+	player_manager = PlayerManager(Player(param))
 
 	while not game.over:
 		current_player, action = player_manager.play()
 
-		reward, new_state = game.step(ENCODE_PLAYER[current_player], current_player, action)
+		print("played")
+
+		value = param["ENCODE_PLAYER"][current_player]
+
+		reward, new_state = game.step(value, current_player, action)
 		
-		if RENDER:
+		if param["RENDER"]:
 			game.render()
 
-	if RENDER:
+	if param["RENDER"]:
 		game.show_game_over_screen()
