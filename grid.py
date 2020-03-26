@@ -19,6 +19,9 @@ class Grid:
 					self.coin_played += 1 # Increment the played coin counter
 					return (column, row)
 
+	def clear(self):
+		self.grid = np.zeros((7, 6, 1))
+
 	def get_grid(self):
 		return self.grid
 

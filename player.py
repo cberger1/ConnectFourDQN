@@ -2,16 +2,13 @@ import pygame
 
 class Player:
 
-	def __init__(self, param=None):
+	def __init__(self, param):
 		if not pygame.get_init():
 			pygame.init() # Initialize if needed
 
 		self.clock = pygame.time.Clock()
 
-		if param == None:
-			self.param = Settings() # If param is None, default values will be used
-		else:
-			self.param = param
+		self.param = param
 
 	def play(self, *argv, **kwargs):
 		if self.param["RENDER"]:
@@ -34,7 +31,7 @@ class Player:
 
 class PlayerManager:
 
-	def __init__(self, *args, delay=None, starting_player=0):
+	def __init__(self, *args, starting_player=0):
 		self.players = []
 		self.current_player = starting_player # 0 or 1
 		self.index = starting_player # 0 or 1

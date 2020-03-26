@@ -1,52 +1,10 @@
 import numpy as np
 import pygame
 import time
+from settings import Settings
 from grid import Grid
 from player import Player, PlayerManager
 
-class Settings:
-	
-	const = {
-		# Render
-		"RENDER" : True,
-		# Board settings
-		"SPACING" : 5,
-		"DIAMETER" : 100,
-		"SIZE" : (740 , 636),
-		# Encoding
-		"ENCODE_PLAYER" : [1, -1],
-		# Rewards
-		"UNAUTHORIZED" : -1,
-		"ACTION" : -0.01,
-		"WIN" : 1,
-		"DRAW" : 0.5,
-		"LOSE" : -1,
-	}
-
-	def __init__(self, const=None, **kwargs):
-		
-		if const == None:
-			for key, value in kwargs.items():
-				if key in self.const:
-					self.const[key] = value
-		else:
-			self.const = const
-
-		self.update_size()
-
-	def __getitem__(self, key):
-		return self.const[key]
-
-	def __setitem__(self, key, value):
-		self.const[key] = value
-
-	def __contains__(self, item):
-		return item in self.const
-
-	def update_size(self):
-		x = int(7 * (self.const["SPACING"] + self.const["DIAMETER"]) + self.const["SPACING"])
-		y = int(6 * (self.const["SPACING"] + self.const["DIAMETER"]) + self.const["SPACING"])
-		self.const["SIZE"] = (x, y)
 
 # RENDER = True
 
@@ -129,7 +87,8 @@ class ConnectFourGame:
 	def reset(self):
 		self.over = False
 		self.winner = None
-		self.grid = Grid()
+		
+		self.grid.clear()
 
 		if self.param["RENDER"]:
 			self.slot_sprites.update(self.images[-1], None) # Set every coin back to empty
@@ -141,9 +100,6 @@ class ConnectFourGame:
 
 	def cell_to_id(self, cell):
 		return 10 * cell[0] + cell[1]
-
-	def compute_next_state(self, state, action):
-		pass
 
 	def step(self, value, player, action):
 		cell = self.grid.play_coin(value, action) # Play
@@ -214,7 +170,8 @@ class ConnectFourGame:
 					if event.type == pygame.MOUSEBUTTONDOWN:
 						return
 		else:
-			print(message, "\n")
+			input(message + "\nPress ENTER to leave")
+
 
 # Connect Four Game Example 
 if __name__ == '__main__':
@@ -227,8 +184,6 @@ if __name__ == '__main__':
 	while not game.over:
 		current_player, action = player_manager.play()
 
-		print("played")
-
 		value = param["ENCODE_PLAYER"][current_player]
 
 		reward, new_state = game.step(value, current_player, action)
@@ -236,5 +191,4 @@ if __name__ == '__main__':
 		if param["RENDER"]:
 			game.render()
 
-	if param["RENDER"]:
-		game.show_game_over_screen()
+	game.show_game_over_screen()

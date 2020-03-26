@@ -5,16 +5,21 @@ import tensorflow as tf
 from keras.models import Sequential
 from keras.layers import Dense, Convolution2D, Flatten
 from keras.optimizers import Adam
-from game import *
+from settings import Settings
+from player import Player, PlayerManager
+from game import ConnectFourGame
+
 
 EPISODES = 1_000
-UPDATE_TARGET_MODEL_EVERY = 200
+UPDATE_TARGET_MODEL_EVERY = 10
 REPLAY_MEMORY_SIZE = 10_000
 BATCH_SIZE = 32
 GAMMA = 0.98
 MAX_ACTIONS = 7 * 6
 
 ACTION_SPACE = 7
+
+UNAUTHORIZED = -1
 
 class OneHotEncoder:
 
@@ -28,6 +33,15 @@ class OneHotEncoder:
 
 	def decode(self, array):
 		return np.argmax(array)
+
+class AgentRadnom(Player):
+
+	def __init__(self):
+		pass
+
+	def play(self, *args, **kwargs):
+		return random.randint(0,6)
+
 
 class AgentDQN(Player):
 
@@ -118,37 +132,47 @@ class AgentDQN(Player):
 
 # Connect Four Game Example 
 if __name__ == '__main__':
-	# env = ConnectFourGame()
+	param = Settings(RENDER=True, ACTION=0.01)
+
+	env = ConnectFourGame(param)
 
 	agent = AgentDQN()
+	randBot = AgentRadnom()
 
-	player_manager = PlayerManager(agent)
+	player_manager = PlayerManager(agent, randBot)
 
 	for episode in range(EPISODES):
-		env = ConnectFourGame()
-		state = env.get_state()
+		state = env.reset()
 
 		num_of_actions = 0
 
 		while not env.over and num_of_actions <= MAX_ACTIONS:
 			current_player, action = player_manager.play(state)
-			value = ENCODE_PLAYER[current_player]
+			value = param["ENCODE_PLAYER"][current_player]
 
 			reward, new_state = env.step(value, current_player, action)
 
-			agent.update_replay_memory(state, action, reward, new_state) # Add sample to database of the agent
+			if current_player == 1: # Transpose --> Bot is always Player 1
+				transpose = -1
+			else:
+				transpose = 1
+
+			agent.update_replay_memory(transpose*state, action, reward, new_state) # Add sample to database of the agent
 			agent.train(value) # Will only train if enough samples are available
 
 			state = new_state
 			num_of_actions += 1
 
-			if RENDER:
+			if param["RENDER"]:
 				env.render() # Render game board
 				env.pause(0.2) # Pause (in seconds)
 
-		if RENDER:
+		if param["RENDER"]:
 			env.show_game_over_screen()
 
 		if episode % UPDATE_TARGET_MODEL_EVERY == 0 and episode != 0: # If necessary update target model
-				print("Episode : ", episode)
-				agent.update_target_model()
+			param["RENDER"] = True
+			print("Episode : ", episode)
+			agent.update_target_model()
+		else:
+			param["RENDER"] = False
