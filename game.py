@@ -38,8 +38,15 @@ class Coin(pygame.sprite.Sprite):
 	def update(self, image, unique_id):
 		# Updates only if the ids matches or if unique_id is None -> means every coin of the group gets updated
 		if self.id == unique_id or unique_id == None:
-			self.image = image
-			self.rect = image.get_rect().move(self.position)
+			self.set_image(image)
+
+	def set_image(self, image):
+		self.image = image
+		self.rect = image.get_rect().move(self.position)
+
+	def equal(self, unique_id):
+		return self.id == unique_id
+
 
 class ConnectFourGame:
 
@@ -47,6 +54,8 @@ class ConnectFourGame:
 		self.over = False
 		self.winner = None
 		self.grid = Grid()
+
+		self.display = True
 
 		if param == None:
 			self.param = Settings() # If param is None, default values will be used
@@ -60,9 +69,9 @@ class ConnectFourGame:
 			self.clock = pygame.time.Clock()
 
 			self.images = [ # Load the images
-				pygame.image.load('Sprites/RedCoin.png'),
-				pygame.image.load('Sprites/YellowCoin.png'),
-				pygame.image.load('Sprites/WhiteCoin.png'),
+				pygame.image.load('Sprites/WhiteCoin.png'), # Empty slot
+				pygame.image.load('Sprites/YellowCoin.png'), # Player 1
+				pygame.image.load('Sprites/RedCoin.png'), # Player -1
 			]
 
 			# Scale images
@@ -80,18 +89,36 @@ class ConnectFourGame:
 
 			for column in range(7):
 				for row in range(6):
-					self.slot_sprites.add(Coin(self.cell_to_position((column, row)), self.images[-1] , self.cell_to_id((column, row))))
+					self.slot_sprites.add(Coin(self.cell_to_position((column, row)), self.images[0] , self.cell_to_id((column, row))))
 
 			self.render()
 	
+	def set_display_mode(self, display):
+		if display:
+			self.screen = pygame.display.set_mode(self.param["SIZE"])
+
+			pygame.display.set_caption("ConnectFourGame")
+			pygame.display.set_icon(pygame.image.load('Sprites/icon.png'))
+
+			self.sync_screen()
+			self.render()
+		else:
+			pygame.quit()
+
+	def sync_screen(self):
+		# Syncronize the screen with the grid
+		for coin in self.slot_sprites.sprites():
+			cell = self.id_to_cell(coin.id)
+			coin.set_image(self.images[int(self.grid[cell])])
+
 	def reset(self):
 		self.over = False
 		self.winner = None
 		
-		self.grid.clear()
+		self.grid.clear() # Clear the gird
 
 		if self.param["RENDER"]:
-			self.slot_sprites.update(self.images[-1], None) # Set every coin back to empty
+			self.slot_sprites.update(self.images[0], None) # Set every coin back to white
 
 		return self.get_state()
 
@@ -99,15 +126,20 @@ class ConnectFourGame:
 		return int(cell[0] * (self.param["SPACING"] + self.param["DIAMETER"]) + self.param["SPACING"]), int(cell[1] * (self.param["SPACING"] + self.param["DIAMETER"]) + self.param["SPACING"])
 
 	def cell_to_id(self, cell):
-		return 10 * cell[0] + cell[1]
+		return int(10 * cell[0] + cell[1])
+
+	def id_to_cell(self, id):
+		# Transforms first the id into a string then to a cell : Example 24 -> "24" -> (2, 4)
+		string = str(id)
+		return (string[0], string[1])
 
 	def step(self, value, player, action):
 		cell = self.grid.play_coin(value, action) # Play
 
-		new_state = self.get_state()
+		new_state = self.grid.get_grid()
 
 		if self.param["RENDER"] and cell != None:
-			self.slot_sprites.update(self.images[player], self.cell_to_id(cell))
+			self.slot_sprites.update(self.images[value], self.cell_to_id(cell))
 
 		if cell == None:
 			return self.param["UNAUTHORIZED"], new_state
@@ -127,6 +159,9 @@ class ConnectFourGame:
 		return self.grid.get_grid()
 
 	def render(self):
+		if not self.display:
+			raise Exception("set display to true before rendering!")
+
 		self.slot_sprites.draw(self.board)
 		self.screen.blit(self.board, (0,0))
 		pygame.display.flip()
@@ -190,5 +225,7 @@ if __name__ == '__main__':
 		
 		if param["RENDER"]:
 			game.render()
+		else:
+			print("Action : ", action)
 
 	game.show_game_over_screen()

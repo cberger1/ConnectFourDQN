@@ -19,6 +19,9 @@ class Player:
 				for event in pygame.event.get():
 					if event.type == pygame.QUIT:
 						exit()
+					if event.type == pygame.KEYDOWN:
+						if event.key <= ord("7") and event.key >= ord("1"):
+							return int(chr(event.key)) - 1
 					if event.type == pygame.MOUSEBUTTONDOWN:
 						return int((event.pos[0] - self.param["SPACING"]) / (self.param["SPACING"] + self.param["DIAMETER"]))
 		else:

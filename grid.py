@@ -6,6 +6,30 @@ class Grid:
 		self.grid = np.zeros((7, 6, 1)) # Initialize grid with zeros
 		self.coin_played = 0 # Keeps track of how many coins are already played
 
+	def __getitem__(self, key):
+		return self.grid[key]
+
+	def __setitem__(self, key, value):
+		self.grid[key] = value
+
+	def __str__(self):
+		'''
+		Retruns a nice visualisation of the grid
+		Just use print(YOUR GRID OBJECT)
+		'''
+
+		string = "\n"
+
+		for column in range(7):
+			string += "|"
+
+			for row in range(6):
+				string += " " + str(int(self.grid[column][row][0])) + " |"
+
+			string += "\n"
+
+		return string
+
 	def play_coin(self, value, column):
 		if column == None:
 			raise Exception("column can't equal to None!")
@@ -17,7 +41,7 @@ class Grid:
 				if self.grid[column][row][0] == 0:
 					self.grid[column][row][0] = value # Assign given value
 					self.coin_played += 1 # Increment the played coin counter
-					return (column, row)
+					return (column, row) # Retrun the cell where the coin was played
 
 	def clear(self):
 		self.grid = np.zeros((7, 6, 1))
@@ -25,7 +49,16 @@ class Grid:
 	def get_grid(self):
 		return self.grid
 
+	def is_full(self):
+		return self.coin_played == 42 # 7*6
+
 	def is_winning_coin(self, cell, value):
+		'''
+		This funciton checks if the given coin (cell is its coordinate) connects to four other coins
+		Important : After playing a coin (function : play_coin()) remeber to always check if it is a winning coin!
+					Or you might not see that the game is won by a player
+		'''
+
 		if self.coin_played < 7: # It's impossible that some one has already won
 			return False
 
@@ -74,6 +107,3 @@ class Grid:
 				return True
 
 		return False
-
-	def is_full(self):
-		return self.coin_played == 42 # 7*6
