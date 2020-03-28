@@ -5,9 +5,9 @@ from bot import *
 
 # Connect Four Game Example 
 if __name__ == '__main__':
-	param = Settings(RENDER=True, ACTION=0.01)
+	param = Settings(RENDER=False, ACTION=0.01)
 
-	env = ConnectFourGame(param)
+	env = ConnectFourGame(param, param["RENDER"])
 
 	agent = AgentDQN()
 	randBot = AgentRadnom()
@@ -43,9 +43,12 @@ if __name__ == '__main__':
 		if param["RENDER"]:
 			env.show_game_over_screen()
 
-		if episode % UPDATE_TARGET_MODEL_EVERY == 0 and episode != 0: # If necessary update target model
+		if episode % UPDATE_TARGET_MODEL_EVERY == 0: # and episode != 0: # If necessary update target model
+			env.set_display_mode(True)
 			param["RENDER"] = True
 			print("Episode : ", episode)
 			agent.update_target_model()
 		else:
+			env.set_display_mode(False)
+
 			param["RENDER"] = False

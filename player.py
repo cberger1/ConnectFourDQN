@@ -4,6 +4,7 @@ class Player:
 
 	def __init__(self, param):
 		if not pygame.get_init():
+			print("Initialized pygame!")
 			pygame.init() # Initialize if needed
 
 		self.clock = pygame.time.Clock()

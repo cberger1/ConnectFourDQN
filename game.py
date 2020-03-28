@@ -56,11 +56,9 @@ class ConnectFourGame:
 		self.grid = Grid()
 
 		# pygame
+		pygame.init()
 		
 		self.param = param # Game settings
-
-		if pygame.get_init():
-			pygame.init() # Initialize if needed
 
 		self.clock = pygame.time.Clock() # Get a referecne to the clock
 
@@ -189,6 +187,8 @@ class ConnectFourGame:
 			message = "Player " + str(int(self.winner)) + " wins!"
 
 		if self.display:
+			pygame.font.init() 
+
 			font = pygame.font.Font(None, 128) # Get the default font
 
 			text = font.render(message, True, (255,255,255), (0,0,0))
