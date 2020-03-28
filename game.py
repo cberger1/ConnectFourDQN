@@ -5,7 +5,6 @@ from settings import Settings
 from grid import Grid
 from player import Player, PlayerManager
 
-
 # RENDER = True
 
 # # Some game constants
@@ -50,50 +49,51 @@ class Coin(pygame.sprite.Sprite):
 
 class ConnectFourGame:
 
-	def __init__(self, param=None):
+	def __init__(self, param, display=True):
 		self.over = False
 		self.winner = None
+		self.display = None
 		self.grid = Grid()
 
-		self.display = True
+		# pygame
+		
+		self.param = param # Game settings
 
-		if param == None:
-			self.param = Settings() # If param is None, default values will be used
-		else:
-			self.param = param
+		if pygame.get_init():
+			pygame.init() # Initialize if needed
 
-		if self.param["RENDER"]:
-			if pygame.get_init():
-				pygame.init() # Initialize if needed
+		self.clock = pygame.time.Clock() # Get a referecne to the clock
 
-			self.clock = pygame.time.Clock()
+		self.images = [ # Load the images
+			pygame.image.load('Sprites/WhiteCoin.png'), # Empty slot
+			pygame.image.load('Sprites/YellowCoin.png'), # Player 1
+			pygame.image.load('Sprites/RedCoin.png'), # Player -1
+		]
 
-			self.images = [ # Load the images
-				pygame.image.load('Sprites/WhiteCoin.png'), # Empty slot
-				pygame.image.load('Sprites/YellowCoin.png'), # Player 1
-				pygame.image.load('Sprites/RedCoin.png'), # Player -1
-			]
+		# Scale images
+		for i in range(3):
+			self.images[i] = pygame.transform.scale(self.images[i], (self.param["DIAMETER"],self.param["DIAMETER"]))
 
-			# Scale images
-			for i in range(3):
-				self.images[i] = pygame.transform.scale(self.images[i], (self.param["DIAMETER"],self.param["DIAMETER"]))
+		# Board surface (just filled wiht blue color)
+		self.board = pygame.Surface(self.param["SIZE"])
+		self.board.fill((0, 0, 255))
 
-			self.screen = pygame.display.set_mode(self.param["SIZE"])
-			pygame.display.set_caption("ConnectFourGame")
-			pygame.display.set_icon(pygame.image.load('Sprites/icon.png'))
+		# A sprite group to hold all coins
+		self.slot_sprites = pygame.sprite.Group()
 
-			self.board = pygame.Surface(self.param["SIZE"])
-			self.board.fill((0, 0, 255))
+		# Add coins to the group
+		for column in range(7):
+			for row in range(6):
+				self.slot_sprites.add(Coin(self.cell_to_position((column, row)), self.images[0] , self.cell_to_id((column, row))))
 
-			self.slot_sprites = pygame.sprite.Group()
-
-			for column in range(7):
-				for row in range(6):
-					self.slot_sprites.add(Coin(self.cell_to_position((column, row)), self.images[0] , self.cell_to_id((column, row))))
-
-			self.render()
+		self.set_display_mode(display) # Opens a game window if display == true
 	
 	def set_display_mode(self, display):
+		if self.display == display: # Check if there is no need to change the mode
+			return
+
+		self.display = display
+
 		if display:
 			self.screen = pygame.display.set_mode(self.param["SIZE"])
 
@@ -117,28 +117,31 @@ class ConnectFourGame:
 		
 		self.grid.clear() # Clear the gird
 
-		if self.param["RENDER"]:
-			self.slot_sprites.update(self.images[0], None) # Set every coin back to white
+		self.slot_sprites.update(self.images[0], None) # Set every coin back to white
 
 		return self.get_state()
 
 	def cell_to_position(self, cell):
-		return int(cell[0] * (self.param["SPACING"] + self.param["DIAMETER"]) + self.param["SPACING"]), int(cell[1] * (self.param["SPACING"] + self.param["DIAMETER"]) + self.param["SPACING"])
+		# Calculates the position of a given cell
+		x = int(cell[0] * (self.param["SPACING"] + self.param["DIAMETER"]) + self.param["SPACING"])
+		y = int(cell[1] * (self.param["SPACING"] + self.param["DIAMETER"]) + self.param["SPACING"])
+		return (x, y)
 
 	def cell_to_id(self, cell):
+		# Retruns the unique_id of a cell : Example (2, 4) -> 24 ; Note : (0, x) -> x
 		return int(10 * cell[0] + cell[1])
 
-	def id_to_cell(self, id):
+	def id_to_cell(self, unique_id):
 		# Transforms first the id into a string then to a cell : Example 24 -> "24" -> (2, 4)
-		string = str(id)
-		return (string[0], string[1])
+		string = "{0:0>2.0f}".format(unique_id) # Some formatting to deal with single didigt numbers
+		return (int(string[0]), int(string[1]))
 
 	def step(self, value, player, action):
 		cell = self.grid.play_coin(value, action) # Play
 
 		new_state = self.grid.get_grid()
 
-		if self.param["RENDER"] and cell != None:
+		if self.display and cell != None:
 			self.slot_sprites.update(self.images[value], self.cell_to_id(cell))
 
 		if cell == None:
@@ -160,14 +163,14 @@ class ConnectFourGame:
 
 	def render(self):
 		if not self.display:
-			raise Exception("set display to true before rendering!")
+			raise Exception("set display mode to true before rendering!")
 
 		self.slot_sprites.draw(self.board)
 		self.screen.blit(self.board, (0,0))
 		pygame.display.flip()
 
 	def pause(self, seconds):
-		if self.param["RENDER"]:
+		if self.display:
 			start = time.time()
 			while (time.time() - start) < seconds:
 				self.clock.tick(30) # Show at most 30 FPS
@@ -184,8 +187,8 @@ class ConnectFourGame:
 			message = "It's a draw!"
 		else:
 			message = "Player " + str(int(self.winner)) + " wins!"
-		
-		if self.param["RENDER"]:
+
+		if self.display:
 			font = pygame.font.Font(None, 128) # Get the default font
 
 			text = font.render(message, True, (255,255,255), (0,0,0))
@@ -210,9 +213,9 @@ class ConnectFourGame:
 
 # Connect Four Game Example 
 if __name__ == '__main__':
-	param = Settings(RENDER=False)
+	param = Settings(RENDER=True)
 
-	game = ConnectFourGame(param)
+	game = ConnectFourGame(param, param["RENDER"])
 
 	player_manager = PlayerManager(Player(param))
 
