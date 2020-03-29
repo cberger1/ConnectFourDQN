@@ -4,7 +4,7 @@ from player import Player, PlayerManager
 
 
 # Connect Four Game Example 
-if __name__ == '__main__':
+if __name__ == "__main__":
 	DISPLAY = True
 
 	param = Settings()

@@ -5,7 +5,7 @@ from bot import *
 
 
 # Training Script
-if __name__ == '__main__':
+if __name__ == "__main__":
 	display = True
 
 	param = Settings(ACTION=0.01)
@@ -27,7 +27,7 @@ if __name__ == '__main__':
 		num_of_actions = 0
 
 		while not env.over and num_of_actions <= MAX_ACTIONS:
-			player, action = player_manager.play(state)
+			player, action = player_manager.play(state=state)
 
 			reward, new_state = env.step(player, action)
 

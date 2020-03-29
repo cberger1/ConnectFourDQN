@@ -22,7 +22,7 @@ class Player:
 
 		self.param = param
 
-	def play(self, *argv, **kwargs):
+	def play(self, **kwargs):
 		while True:
 			self.clock.tick(30) # Show at most 30 FPS
 
@@ -41,7 +41,7 @@ class PlayerConsole(Player):
 	def __init__(self):
 		pass
 
-	def play(self, player=None):
+	def play(self, player=None, **kwargs):
 		action = -1
 
 		while action > 6 or action < 0:
@@ -63,8 +63,8 @@ class PlayerManager:
 
 		self.two_player = len(self.players) == 2
 	
-	def play(self, *args, **kwargs):
-		cell = self.players[self.index].play(*args, **kwargs)
+	def play(self, **kwargs):
+		cell = self.players[self.index].play(**kwargs, player=self.current_player)
 
 		if self.two_player:
 			self.index = not self.index # If two different players : index changes form 0 (False) to 1 (True) and vice versa

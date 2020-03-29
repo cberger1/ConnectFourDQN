@@ -42,11 +42,35 @@ class AgentRadnom(Player):
 	def __init__(self):
 		pass
 
-	def play(self, *args, **kwargs):
+	def play(self, **kwargs):
 		return random.randint(0,6)
 
 
 class AgentDQN(Player):
+	'''
+	Importent Notes
+
+	1) When predicting an action (actually the Q-Values) from a state,
+	the state is multiplied with player (either 1 or -1).
+	In that way the neural network (model or target_model)
+	always sees the game state in the view of player 1. So,
+	the neural network does get "confused".
+
+	About DQN
+
+	0) My short definition : Learning by playing/exploring an environement
+	using deep neural networks
+
+	1) Q-Values : To every action for a given state we assign a Q-Value.
+	The action to play is just the highest Q-Value
+
+	2) Model vs Target Model : The "target_model" is the more "stable" model.
+	In the other hand the "model" is more chaotic because usually it gets a fit
+	every game step!
+
+	3) For more infos about DQN : Google is your friend!
+
+	'''
 
 	def __init__(self, param, model=None, replay_memory=None):
 		# Game settings
@@ -86,11 +110,11 @@ class AgentDQN(Player):
 
 		return model
 
-	def play(self, state, use_target_model=False):
+	def play(self, state, player, use_target_model=False):
 		global EPSILON
 		# First compute the Q-Values, then return the index with the highest Q-Value aka the action
 		if use_target_model:
-			return np.argmax(self.target_model.predict(np.reshape(state, (1,7,6,1)))[0])
+			return np.argmax(self.target_model.predict(player * np.array([state]))[0])
 		else:
 			# Decay epsilon
 			EPSILON = max(MIN_EPSILON, EPSILON * EPSILON_DECAY)
@@ -98,7 +122,7 @@ class AgentDQN(Player):
 			if EPSILON < random.random():
 				return random.randint(0,6)
 			else:
-				return np.argmax(self.model.predict(np.reshape(state, (1,7,6,1)))[0])
+				return np.argmax(self.model.predict(player * np.array([state]))[0])
 
 	def update_replay_memory(self, state, player, action, reward, new_state):
 		self.replay_memory.append((state, player, action, reward, new_state))
@@ -119,7 +143,7 @@ class AgentDQN(Player):
 			state, player, action, reward, opponent_state = sample[i]
 
 			opponent_player = -1 * player
-			opponent_action = self.play(opponent_state, use_target_model=True) # Opponent makes the best possible action
+			opponent_action = self.play(opponent_state, opponent_player, use_target_model=True) # Opponent makes the best possible action
 
 			if compute_new_state != None:
 				new_state = compute_new_state(opponent_state, opponent_player, opponent_action) # New State after opponent has played
@@ -130,9 +154,9 @@ class AgentDQN(Player):
 						if new_state[opponent_action][row] == 0:
 							new_state[opponent_action][row] = opponent_player # Assign given value
 
-			target = reward + GAMMA * max(self.target_model.predict(np.reshape(new_state, (1, 7, 6, 1)))) # The target Q-Value of the played action
+			target = reward + GAMMA * max(self.target_model.predict(player * np.array([new_state]))) # The target Q-Value of the played action
 
-			q_values = self.model.predict(np.reshape(new_state, (1, 7, 6, 1)))[0]
+			q_values = self.model.predict(player * np.array([state]))[0]
 
 			for j in range(self.param["ACTION_SPACE"]):
 				if j == action:
