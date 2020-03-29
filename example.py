@@ -1,27 +1,24 @@
 from settings import Settings
 from game import ConnectFourGame
 from player import Player, PlayerManager
-from grid import Grid
-import pygame
-import time
 
 
 # Connect Four Game Example 
 if __name__ == '__main__':
-	param = Settings(RENDER=True)
+	DISPLAY = True
 
-	game = ConnectFourGame(param, param["RENDER"])
-
+	param = Settings()
+	game = ConnectFourGame(param, DISPLAY)
 	player_manager = PlayerManager(Player(param))
 
 	while not game.over:
-		current_player, action = player_manager.play()
+		player, action = player_manager.play()
 
-		value = param["ENCODE_PLAYER"][current_player]
-
-		reward, new_state = game.step(value, current_player, action)
+		reward, new_state = game.step(player, action)
 		
-		if param["RENDER"]:
+		if DISPLAY:
 			game.render()
+		else:
+			print(f"Player : {player}, Action : {action}")
 
 	game.show_game_over_screen()

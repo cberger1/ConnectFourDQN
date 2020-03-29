@@ -6,26 +6,25 @@ Constant Container Class
 All import settings are stored in this class
 
 When creating a new Settings Object, you can pass some param you want to change
-Example : param = Settings(RENDER=False, SPACING=10)
+Note : Don't change SIZE nor ACTION_SPACE!
+Example : param = Settings(DIAMETER=150, SPACING=10)
 
 It is possible to directly index a settings Object
-Example : if param["RENDER"]:
+Example : param["SIZE"]:
 
 Those parameters/settings are then used to initialize a Game or Player Object
 Important : Always use the same settings for the Player and the Game he is used for !
 '''
 
+
 class Settings:
 	
 	const = {
-		# Render
-		"RENDER" : True,
 		# Board settings
 		"SPACING" : 5,
 		"DIAMETER" : 100,
 		"SIZE" : (740 , 636),
-		# Encoding
-		"ENCODE_PLAYER" : [1, -1],
+		"ACTION_SPACE" : 7,
 		# Rewards
 		"UNAUTHORIZED" : -1,
 		"ACTION" : -0.01,

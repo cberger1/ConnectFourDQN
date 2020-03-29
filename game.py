@@ -1,9 +1,7 @@
 import numpy as np
 import pygame
 import time
-from settings import Settings
 from grid import Grid
-from player import Player, PlayerManager
 
 # RENDER = True
 
@@ -109,13 +107,15 @@ class ConnectFourGame:
 			cell = self.id_to_cell(coin.id)
 			coin.set_image(self.images[int(self.grid[cell])])
 
-	def reset(self):
+	def reset(self, display=True):
 		self.over = False
 		self.winner = None
 		
 		self.grid.clear() # Clear the gird
 
 		self.slot_sprites.update(self.images[0], None) # Set every coin back to white
+
+		self.set_display_mode(display)
 
 		return self.get_state()
 
@@ -134,19 +134,19 @@ class ConnectFourGame:
 		string = "{0:0>2.0f}".format(unique_id) # Some formatting to deal with single didigt numbers
 		return (int(string[0]), int(string[1]))
 
-	def step(self, value, player, action):
-		cell = self.grid.play_coin(value, action) # Play
+	def step(self, player, action):
+		cell = self.grid.play_coin(player, action) # Play
 
 		new_state = self.grid.get_grid()
 
 		if self.display and cell != None:
-			self.slot_sprites.update(self.images[value], self.cell_to_id(cell))
+			self.slot_sprites.update(self.images[player], self.cell_to_id(cell))
 
 		if cell == None:
 			return self.param["UNAUTHORIZED"], new_state
 
-		if self.grid.is_winning_coin(cell, value):
-			self.winner = value
+		if self.grid.is_winning_coin(cell, player):
+			self.winner = player
 			self.over = True
 			return  self.param["WIN"], new_state
 		
@@ -209,26 +209,3 @@ class ConnectFourGame:
 						return
 		else:
 			input(message + "\nPress ENTER to leave")
-
-
-# Connect Four Game Example 
-if __name__ == '__main__':
-	param = Settings(RENDER=True)
-
-	game = ConnectFourGame(param, param["RENDER"])
-
-	player_manager = PlayerManager(Player(param))
-
-	while not game.over:
-		current_player, action = player_manager.play()
-
-		value = param["ENCODE_PLAYER"][current_player]
-
-		reward, new_state = game.step(value, current_player, action)
-		
-		if param["RENDER"]:
-			game.render()
-		else:
-			print("Action : ", action)
-
-	game.show_game_over_screen()
