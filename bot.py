@@ -1,17 +1,20 @@
 import random
+import time
+import os
 import numpy as np
 from collections import deque
 import tensorflow as tf
 from keras.models import Sequential
 from keras.layers import Dense, Convolution2D, Flatten
+from keras.callbacks import ModelCheckpoint, TensorBoard
 from keras.optimizers import Adam
 from settings import Settings
 from player import Player, PlayerManager
 from game import ConnectFourGame
 
 
-EPISODES = 1_000
-UPDATE_TARGET_MODEL_EVERY = 200
+EPISODES = 20 # 1_000
+UPDATE_TARGET_MODEL_EVERY = 10 # 200
 REPLAY_MEMORY_SIZE = 10_000
 MIN_TRAIN_SAMPLE = 100
 BATCH_SIZE = 32
@@ -23,6 +26,9 @@ MIN_EPSILON = 0.1
 RENDER_EVERY = 50
 SHOW_GAME_OVER = True
 MAX_ACTIONS = 7 * 6
+
+MODEL_NAME = "8x8c-32d-16d"
+
 
 class OneHotEncoder:
 
@@ -36,6 +42,7 @@ class OneHotEncoder:
 
 	def decode(self, array):
 		return np.argmax(array)
+
 
 class AgentRadnom(Player):
 
@@ -92,7 +99,7 @@ class AgentDQN(Player):
 			self.replay_memory = replay_memory
 		else:
 			self.replay_memory = deque(maxlen=REPLAY_MEMORY_SIZE)
-
+		
 		# One Hot Encoder / Decoder
 		self.codec = OneHotEncoder(self.param["ACTION_SPACE"]-1)
 
@@ -104,11 +111,16 @@ class AgentDQN(Player):
 			model.add(Flatten())
 			model.add(Dense(32, activation="relu"))
 			model.add(Dense(16, activation="relu"))
-			model.add(Dense(self.param["ACTION_SPACE"], activation="relu"))
+			model.add(Dense(self.param["ACTION_SPACE"], activation="sigmoid"))
 
-			model.compile(optimizer=Adam(), loss="mse")
+			model.compile(optimizer=Adam(), loss="huber_loss")
 
 		return model
+
+	def save(self, directory, name):
+		if not os.path.exists(directory):
+			os.makedirs(directory)
+		self.target_model.save(f"{directory}/{name}")
 
 	def play(self, state, player, use_target_model=False):
 		global EPSILON
@@ -168,4 +180,4 @@ class AgentDQN(Player):
 			x.append(state)
 			y.append(q_values)
 
-		self.model.fit(np.array(x), np.array(y), verbose=0)
+		return self.model.train_on_batch(np.array(x), np.array(y))

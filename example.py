@@ -2,7 +2,6 @@ from settings import Settings
 from game import ConnectFourGame
 from player import Player, PlayerManager
 
-
 # Connect Four Game Example 
 if __name__ == "__main__":
 	DISPLAY = True
