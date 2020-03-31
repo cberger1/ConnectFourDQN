@@ -71,13 +71,14 @@ if __name__ == '__main__':
 
 	tensorboard.on_train_end(None)
 
-	# webbrowser.open_new_tab(f"http://localhost:{PORT}/")
-	# os.system(f"tensorboard --logdir=logs --port={PORT}")
-	t = threading.Thread(target=run_tensorboard)
-	t.start()
-	print("Sleeping")
-	time.sleep(2)
-	quit()
-	t.do_run = False
-	t.join()
+	webbrowser.open_new_tab(f"http://localhost:{PORT}/")
+	os.system(f"tensorboard --logdir=logs --port={PORT}")
+	
+	# t = threading.Thread(target=run_tensorboard)
+	# t.start()
+	# print("Sleeping")
+	# time.sleep(2)
+	# quit()
+	# t.do_run = False
+	# t.join()
 
