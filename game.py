@@ -82,15 +82,14 @@ class ConnectFourGame:
 			for row in range(6):
 				self.slot_sprites.add(Coin(self.cell_to_position((column, row)), self.images[0] , self.cell_to_id((column, row))))
 
-		self.set_display_mode(display) # Opens a game window if display == true
+		self.set_display_mode(display) # Opens a game window if display is true
 	
 	def set_display_mode(self, display):
 		if self.display == display: # Check if there is no need to change the mode
 			return
 
-		self.display = display
-
 		if display:
+			self.display = True
 			self.screen = pygame.display.set_mode(self.param["SIZE"])
 
 			pygame.display.set_caption("ConnectFourGame")
@@ -99,7 +98,11 @@ class ConnectFourGame:
 			self.sync_screen()
 			self.render()
 		else:
-			pygame.quit()
+			if self.display:
+				pygame.quit() # Only quit pygame if there is a open window
+
+			self.display = False
+
 
 	def sync_screen(self):
 		# Syncronize the screen with the grid

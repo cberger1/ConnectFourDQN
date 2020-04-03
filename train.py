@@ -6,6 +6,9 @@ from keras.callbacks import TensorBoard, ModelCheckpoint
 import time
 
 
+MODEL_DIR = f"models/{MODEL_NAME}/{int(time.time())}"
+
+
 # Training Script
 if __name__ == '__main__':
 	display = False
@@ -58,12 +61,12 @@ if __name__ == '__main__':
 
 		if episode % SAVE_EVERY == 0 and episode != 0: # If necessary save target model
 			print("Saving...")
-			agent.save(f"models/{MODEL_NAME}/{int(time.time())}", f"v{int(episode/UPDATE_TARGET_MODEL_EVERY)}-loss-{loss}")
+			agent.save(MODEL_DIR, f"v{int(episode/UPDATE_TARGET_MODEL_EVERY)}-loss-{loss}")
 			print("Done")
 
 	print("End of Training!\nSaving...")
 	agent.update_target_model()
-	agent.save(f"models/{MODEL_NAME}/{int(time.time())}", f"v{int(episode/UPDATE_TARGET_MODEL_EVERY)}-loss-{loss}")
+	agent.save(MODEL_DIR, f"v{EPISODES}-loss-{loss}")
 	print("Done")
 
 	tensorboard.on_train_end(None)

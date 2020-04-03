@@ -11,9 +11,10 @@ class Player:
 	'''
 
 	def __init__(self, param):
-		if not pygame.get_init():
-			pygame.init() # Initialize if needed
-			print("Initialized pygame!")
+		pygame.init()
+		# if not pygame.get_init():
+		# 	pygame.init() # Initialize if needed
+		# 	print("Initialized pygame!")
 
 		if pygame.display.get_surface() == None:
 			raise Exception("Please call pygame.display.set_mode() before initializing a Player instance! Or use a PlayerConsole!")
@@ -57,9 +58,14 @@ class PlayerManager:
 		self.current_player = 1 # 1 or -1
 		self.index = 0 # 0 or 1
 
+		if len(args) >  2 or len(args) == 0:
+			raise Exception(f"Only takes one or two args! You passed {len(args)} args.")
+
 		for arg in args:
 			if isinstance(arg, Player):
 				self.players.append(arg)
+			else:
+				raise Exception(f"The args must be an instance of Player! You passed an object of type : {type(arg)}")
 
 		self.two_player = len(self.players) == 2
 	
