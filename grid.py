@@ -47,6 +47,15 @@ class Grid:
 	def clear(self):
 		self.grid = np.zeros((7, 6, 1))
 
+	def set_grid(self, grid):
+		self.grid = grid.copy()
+		self.coin_played = 0
+
+		for column in range(7):
+			for row in range(6):
+				if self.grid[column][row][0] != 0:
+					self.coin_played += 1
+
 	def get_grid(self):
 		return self.grid
 

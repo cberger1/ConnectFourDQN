@@ -5,7 +5,7 @@ import numpy as np
 from collections import deque
 import tensorflow as tf
 from keras.models import Sequential
-from keras.layers import Dense, Convolution2D, Flatten
+from keras.layers import Dense, Convolution2D, Dropout, Flatten
 from keras.callbacks import ModelCheckpoint, TensorBoard
 from keras.optimizers import Adam
 from settings import Settings
@@ -13,8 +13,9 @@ from player import Player, PlayerManager
 from game import ConnectFourGame
 
 
-EPISODES = 20 # 1_000
-UPDATE_TARGET_MODEL_EVERY = 10 # 200
+EPISODES = 2_000
+UPDATE_TARGET_MODEL_EVERY = 200
+SAVE_EVERY = 250
 REPLAY_MEMORY_SIZE = 10_000
 MIN_TRAIN_SAMPLE = 100
 BATCH_SIZE = 32
@@ -23,8 +24,8 @@ EPSILON = 0.9
 EPSILON_DECAY = 0.99
 MIN_EPSILON = 0.1
 
-RENDER_EVERY = 50
-SHOW_GAME_OVER = True
+RENDER_EVERY = 200
+SHOW_GAME_OVER = False
 MAX_ACTIONS = 7 * 6
 
 MODEL_NAME = "8x8c-32d-16d"
@@ -100,6 +101,9 @@ class AgentDQN(Player):
 		else:
 			self.replay_memory = deque(maxlen=REPLAY_MEMORY_SIZE)
 		
+		# Simulator
+		self.simulator = ConnectFourGame(param, display=False)
+
 		# One Hot Encoder / Decoder
 		self.codec = OneHotEncoder(self.param["ACTION_SPACE"]-1)
 
@@ -136,13 +140,13 @@ class AgentDQN(Player):
 			else:
 				return np.argmax(self.model.predict(player * np.array([state]))[0])
 
-	def update_replay_memory(self, state, player, action, reward, new_state):
-		self.replay_memory.append((state, player, action, reward, new_state))
+	def update_replay_memory(self, state, player, action, reward, new_state, over):
+		self.replay_memory.append((state, player, action, reward, new_state, over))
 
 	def update_target_model(self):
 		self.target_model.set_weights(self.model.get_weights())
 
-	def train(self, compute_new_state=None):
+	def train(self):
 		if len(self.replay_memory) < MIN_TRAIN_SAMPLE:
 			return
 
@@ -152,21 +156,25 @@ class AgentDQN(Player):
 		y = [] 
 
 		for i in range(BATCH_SIZE):
-			state, player, action, reward, opponent_state = sample[i]
+			state, player, action, reward, opponent_state, over = sample[i]
 
-			opponent_player = -1 * player
-			opponent_action = self.play(opponent_state, opponent_player, use_target_model=True) # Opponent makes the best possible action
-
-			if compute_new_state != None:
-				new_state = compute_new_state(opponent_state, opponent_player, opponent_action) # New State after opponent has played
+			if over:
+				new_state = state
+				target = reward
 			else:
-				new_state = opponent_state.copy()
-				if new_state[opponent_action][0] == 0: # Free spot in that column
-					for row in range(5, -1, -1):
-						if new_state[opponent_action][row] == 0:
-							new_state[opponent_action][row] = opponent_player # Assign given value
+				opponent_player = -1 * player
+				opponent_action = self.play(opponent_state, opponent_player, use_target_model=True) # Opponent makes the best possible action
 
-			target = reward + GAMMA * max(self.target_model.predict(player * np.array([new_state]))) # The target Q-Value of the played action
+				self.simulator.set_state(opponent_state)
+
+				opponent_reward, new_state = self.simulator.step(opponent_player, opponent_action)
+
+				if opponent_reward == self.param["WIN"]:
+					reward = self.param["LOSE"]
+				elif opponent_reward == self.param["DRAW"]:
+					reward = self.param["DRAW"]
+
+				target = reward + GAMMA * max(self.target_model.predict(player * np.array([new_state]))) # The target Q-Value of the played action
 
 			q_values = self.model.predict(player * np.array([state]))[0]
 

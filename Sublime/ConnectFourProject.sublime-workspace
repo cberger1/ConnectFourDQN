@@ -4,6 +4,50 @@
 		"selected_items":
 		[
 			[
+				"t",
+				"threading\tmodule ⟠"
+			],
+			[
+				"open_new",
+				"open_new_tab\tfunction ⟠"
+			],
+			[
+				"web",
+				"webbrowser\tmodule ⟠"
+			],
+			[
+				"trai",
+				"train_on_batch\tfunction ⟠"
+			],
+			[
+				"ten",
+				"tensor_board"
+			],
+			[
+				"tra",
+				"train_on_batch(…)\tfunction ⟠"
+			],
+			[
+				"ran",
+				"random()\tfunction ⟠"
+			],
+			[
+				"ra",
+				"random\tmodule ⟠"
+			],
+			[
+				"oppo",
+				"opponent_state\tunknown ⟠"
+			],
+			[
+				"ACTION",
+				"ACTION_SPACE"
+			],
+			[
+				"Pl",
+				"PlayerConsole"
+			],
+			[
 				"QUIT",
 				"quit()\tfunction ⟠"
 			],
@@ -264,10 +308,6 @@
 				"rects"
 			],
 			[
-				"ra",
-				"random"
-			],
-			[
 				"ca",
 				"card_back_img"
 			],
@@ -287,7 +327,7 @@
 			"file": "/D/Colin Berger/Documents/Python/ConnectFourDQN/game.py",
 			"settings":
 			{
-				"buffer_size": 6262,
+				"buffer_size": 5753,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
@@ -296,7 +336,8 @@
 			"file": "/D/Colin Berger/Documents/Python/ConnectFourDQN/settings.py",
 			"settings":
 			{
-				"buffer_size": 1365,
+				"buffer_size": 1354,
+				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
 		},
@@ -304,7 +345,7 @@
 			"file": "/D/Colin Berger/Documents/Python/ConnectFourDQN/player.py",
 			"settings":
 			{
-				"buffer_size": 1451,
+				"buffer_size": 2062,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
@@ -313,7 +354,7 @@
 			"file": "/D/Colin Berger/Documents/Python/ConnectFourDQN/grid.py",
 			"settings":
 			{
-				"buffer_size": 2475,
+				"buffer_size": 2476,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
@@ -322,7 +363,7 @@
 			"file": "/D/Colin Berger/Documents/Python/ConnectFourDQN/bot.py",
 			"settings":
 			{
-				"buffer_size": 3540,
+				"buffer_size": 5172,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
@@ -331,7 +372,7 @@
 			"file": "/D/Colin Berger/Documents/Python/ConnectFourDQN/train.py",
 			"settings":
 			{
-				"buffer_size": 1457,
+				"buffer_size": 2367,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
@@ -340,7 +381,7 @@
 			"file": "/D/Colin Berger/Documents/Python/ConnectFourDQN/example.py",
 			"settings":
 			{
-				"buffer_size": 596,
+				"buffer_size": 520,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
@@ -465,6 +506,10 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"ACTION_SPACE",
+			"codec",
+			"value",
+			"ENCODE_PLAYER",
 			"images",
 			"cell_to_position",
 			"SIZE",
@@ -533,15 +578,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 6262,
+						"buffer_size": 5753,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1402,
-								1402
+								0,
+								0
 							]
 						],
 						"settings":
@@ -550,7 +595,7 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 1056.0,
+						"translation.y": 2288.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 3,
@@ -562,15 +607,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1365,
+						"buffer_size": 1354,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1042,
-								1042
+								0,
+								0
 							]
 						],
 						"settings":
@@ -582,7 +627,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 6,
+					"stack_index": 5,
 					"type": "text"
 				},
 				{
@@ -591,15 +636,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1451,
+						"buffer_size": 2062,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								85,
-								85
+								0,
+								0
 							]
 						],
 						"settings":
@@ -620,44 +665,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 2475,
+						"buffer_size": 2476,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1070,
-								1070
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Python/Python.sublime-syntax",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 880.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 2,
-					"type": "text"
-				},
-				{
-					"buffer": 4,
-					"file": "/D/Colin Berger/Documents/Python/ConnectFourDQN/bot.py",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 3540,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								365,
-								365
+								0,
+								0
 							]
 						],
 						"settings":
@@ -669,24 +685,24 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 6,
 					"type": "text"
 				},
 				{
-					"buffer": 5,
-					"file": "/D/Colin Berger/Documents/Python/ConnectFourDQN/train.py",
+					"buffer": 4,
+					"file": "/D/Colin Berger/Documents/Python/ConnectFourDQN/bot.py",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1457,
+						"buffer_size": 5172,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								357,
-								357
+								35,
+								35
 							]
 						],
 						"settings":
@@ -695,7 +711,36 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 602.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "/D/Colin Berger/Documents/Python/ConnectFourDQN/train.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2367,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2224,
+								2224
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 1232.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
@@ -707,15 +752,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 596,
+						"buffer_size": 520,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								596,
-								596
+								103,
+								103
 							]
 						],
 						"settings":
@@ -726,7 +771,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 5,
+					"stack_index": 1,
 					"type": "text"
 				}
 			]

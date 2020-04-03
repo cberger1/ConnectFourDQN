@@ -156,6 +156,9 @@ class ConnectFourGame:
 
 		return self.param["ACTION"], new_state
 
+	def set_state(self, state):
+		self.grid.set_grid(state)
+
 	def get_state(self):
 		return self.grid.get_grid()
 

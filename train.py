@@ -3,14 +3,7 @@ from game import ConnectFourGame
 from player import Player, PlayerManager
 from bot import *
 from keras.callbacks import TensorBoard, ModelCheckpoint
-import time, os, sys, webbrowser, threading
-
-
-PORT = 6006 # Default TensorBoard Port
-
-def run_tensorboard():
-	webbrowser.open_new_tab(f"http://localhost:{PORT}/")
-	os.system(f"tensorboard --logdir=logs --port={PORT}")
+import time
 
 
 # Training Script
@@ -36,18 +29,18 @@ if __name__ == '__main__':
 		env.set_display_mode(display)
 		
 		state = env.reset(display)
-		num_of_actions = 0
+		steps = 0
 		
-		while not env.over and num_of_actions <= MAX_ACTIONS:
+		while not env.over and steps <= MAX_ACTIONS:
 			player, action = player_manager.play(state=state)
 
 			reward, new_state = env.step(player, action)
 
-			agent.update_replay_memory(state, player, action, reward, new_state) # Add sample to the database of the agent
+			agent.update_replay_memory(state, player, action, reward, new_state, env.over) # Add sample to the database of the agent
 			loss = agent.train() # Will only train if enough samples are available
 
 			state = new_state
-			num_of_actions += 1
+			steps += 1
 
 			if display:
 				env.render() # Render game board
@@ -62,7 +55,11 @@ if __name__ == '__main__':
 		if episode % UPDATE_TARGET_MODEL_EVERY == 0 and episode != 0: # If necessary update target model
 			print("Episode : ", episode)
 			agent.update_target_model()
+
+		if episode % SAVE_EVERY == 0 and episode != 0: # If necessary save target model
+			print("Saving...")
 			agent.save(f"models/{MODEL_NAME}/{int(time.time())}", f"v{int(episode/UPDATE_TARGET_MODEL_EVERY)}-loss-{loss}")
+			print("Done")
 
 	print("End of Training!\nSaving...")
 	agent.update_target_model()
@@ -70,15 +67,4 @@ if __name__ == '__main__':
 	print("Done")
 
 	tensorboard.on_train_end(None)
-
-	webbrowser.open_new_tab(f"http://localhost:{PORT}/")
-	os.system(f"tensorboard --logdir=logs --port={PORT}")
-	
-	# t = threading.Thread(target=run_tensorboard)
-	# t.start()
-	# print("Sleeping")
-	# time.sleep(2)
-	# quit()
-	# t.do_run = False
-	# t.join()
 
