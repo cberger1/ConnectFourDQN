@@ -4,9 +4,11 @@ from player import Player, PlayerConsole, PlayerManager
 from bot import AgentDQN
 from keras.models import load_model
 import time
+import numpy as np
 
 
-MODEL_PATH = "models/8x8c-32d-16d/1585904133/v9-loss-2.0753712604796443e-13"
+
+MODEL_PATH = "models/16c-d-32d-16d/1586001264/v2000-loss-15.458379115909338"
 
 
 # Connect Four Game Example 
@@ -19,11 +21,14 @@ if __name__ == "__main__":
 	player = Player(param)
 	bot = AgentDQN(param, model=load_model(MODEL_PATH))
 
-	player_manager = PlayerManager(bot, player)
+	player_manager = PlayerManager(player, bot)
 		
 	state = game.get_state()
 
 	while not game.over:
+		prediction = bot.model.predict(np.array([state]))
+		print(np.round(prediction, 2))
+
 		player, action = player_manager.play(state=state) # Passing the state for the AgentDQN
 
 		reward, new_state = game.step(player, action)

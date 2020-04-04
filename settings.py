@@ -27,7 +27,7 @@ class Settings:
 		"ACTION_SPACE" : 7,
 		# Rewards
 		"UNAUTHORIZED" : -1,
-		"ACTION" : -0.01,
+		"ACTION" : -0.1,
 		"WIN" : 1,
 		"DRAW" : 0.5,
 		"LOSE" : -1,

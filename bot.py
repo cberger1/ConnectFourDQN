@@ -14,21 +14,33 @@ from game import ConnectFourGame
 
 
 EPISODES = 2_000
+
 UPDATE_TARGET_MODEL_EVERY = 200
 SAVE_EVERY = 250
+PLOT_EVERY = 10
+
 REPLAY_MEMORY_SIZE = 10_000
 MIN_TRAIN_SAMPLE = 100
 BATCH_SIZE = 32
-GAMMA = 0.98
-EPSILON = 0.9
-EPSILON_DECAY = 0.99
-MIN_EPSILON = 0.1
+
+GAMMA = 0.999
+
+EPSILON = 1
+EPSILON_DECAY = 0.999
+MIN_EPSILON = 0.05
 
 RENDER_EVERY = 200
 SHOW_GAME_OVER = False
 MAX_ACTIONS = 7 * 6
 
-MODEL_NAME = "8x8c-32d-16d"
+'''
+Model naming:
+Conv2D : {filters}c
+Dense : {units}d
+Dropout : d
+'''
+
+MODEL_NAME = "16c-d-32d-16d"
 
 
 class OneHotEncoder:
@@ -111,13 +123,17 @@ class AgentDQN(Player):
 		if model == None:
 			model = Sequential()
 
-			model.add(Convolution2D(8, (4,4), activation="relu", padding="same", input_shape=(7, 6, 1)))
+			model.add(Convolution2D(16, (4,4), activation="relu", padding="same", input_shape=(7, 6, 1)))
 			model.add(Flatten())
+			model.add(Dropout(0.2))
 			model.add(Dense(32, activation="relu"))
+			model.add(Dropout(0.2))
 			model.add(Dense(16, activation="relu"))
 			model.add(Dense(self.param["ACTION_SPACE"], activation="sigmoid"))
 
 			model.compile(optimizer=Adam(), loss="huber_loss")
+
+		print(model.summary())
 
 		return model
 
@@ -126,16 +142,13 @@ class AgentDQN(Player):
 			os.makedirs(directory)
 		self.target_model.save(f"{directory}/{name}")
 
-	def play(self, state, player, use_target_model=False):
+	def play(self, state, player, epsilon=0, use_target_model=False):
 		global EPSILON
 		# First compute the Q-Values, then return the index with the highest Q-Value aka the action
 		if use_target_model:
 			return np.argmax(self.target_model.predict(player * np.array([state]))[0])
 		else:
-			# Decay epsilon
-			EPSILON = max(MIN_EPSILON, EPSILON * EPSILON_DECAY)
-
-			if EPSILON < random.random():
+			if epsilon > random.random():
 				return random.randint(0,6)
 			else:
 				return np.argmax(self.model.predict(player * np.array([state]))[0])
@@ -148,7 +161,7 @@ class AgentDQN(Player):
 
 	def train(self):
 		if len(self.replay_memory) < MIN_TRAIN_SAMPLE:
-			return
+			return 0
 
 		sample = random.sample(self.replay_memory, BATCH_SIZE)
 
@@ -174,16 +187,18 @@ class AgentDQN(Player):
 				elif opponent_reward == self.param["DRAW"]:
 					reward = self.param["DRAW"]
 
-				target = reward + GAMMA * max(self.target_model.predict(player * np.array([new_state]))) # The target Q-Value of the played action
+				target = reward + GAMMA * max(self.target_model.predict(player * np.array([new_state]))[0]) # The target Q-Value of the played action
 
 			q_values = self.model.predict(player * np.array([state]))[0]
 
-			for j in range(self.param["ACTION_SPACE"]):
-				if j == action:
-					q_values[j] == target
+			q_values[action] = target
 
-				if new_state[j][0] != 0: # Check if action j is not possible
-					q_values[j] == self.param["UNAUTHORIZED"]
+			# for j in range(self.param["ACTION_SPACE"]):
+			# 	if j == action:
+			# 		q_values[j] = target
+
+			# 	if new_state[j][0] != 0: # Check if action j is not possible
+			# 		q_values[j] = self.param["UNAUTHORIZED"]
 
 			x.append(state)
 			y.append(q_values)
