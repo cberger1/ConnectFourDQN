@@ -12,6 +12,7 @@ import time
 
 MODEL_DIR = f"models/{MODEL_NAME}/{int(time.time())}"
 
+TRACK_MODEL = True
 
 # Training Script
 if __name__ == '__main__':
@@ -21,18 +22,18 @@ if __name__ == '__main__':
 
 	display = False
 
-	param = Settings()
-
+	param = Settings(ACTION=-0.01)
 
 	env = ConnectFourGame(param, display)
 
 	agent = AgentDQN(param)
 	agent_random = AgentRadnom()
 
-	player_manager = PlayerManager(agent) #, agent_random)
+	player_manager = PlayerManager(agent)
 
-	tensorboard = TensorBoard(log_dir=f"logs\{MODEL_NAME}-{int(time.time())}")
-	tensorboard.set_model(agent.model)
+	if TRACK_MODEL:
+		tensorboard = TensorBoard(log_dir=f"logs\{MODEL_NAME}-{int(time.time())}")
+		tensorboard.set_model(agent.model)
 
 	loss = 0
 	epsilon = EPSILON
@@ -54,9 +55,7 @@ if __name__ == '__main__':
 
 			reward, new_state = env.step(player, action)
 
-			if np.array_equal(state, new_state):
-				agent.update_replay_memory(state, player, action, reward, new_state, env.over) # Add sample to the database of the agent
-			
+			agent.update_replay_memory(state, player, action, reward, new_state, env.over) # Add sample to the database of the agent
 			loss += agent.train() # Will only train if enough samples are available
 
 			state = new_state
@@ -70,7 +69,8 @@ if __name__ == '__main__':
 			env.show_game_over_screen()
 
 		if episode % PLOT_EVERY == 0 and episode != 0:
-			tensorboard.on_epoch_end(episode, {"loss" : loss/PLOT_EVERY})
+			if TRACK_MODEL:
+				tensorboard.on_epoch_end(episode, {"loss" : loss/PLOT_EVERY})
 			loss = 0
 
 		if episode % UPDATE_TARGET_MODEL_EVERY == 0 and episode != 0: # If necessary update target model
@@ -79,13 +79,14 @@ if __name__ == '__main__':
 
 		if episode % SAVE_EVERY == 0 and episode != 0: # If necessary save target model
 			print("Saving...")
-			agent.save(MODEL_DIR, f"v{episode}")
+			agent.save(MODEL_DIR, f"v{episode:06}")
 			print("Done")
 
 	print("End of Training!\nSaving...")
 	agent.update_target_model()
-	agent.save(MODEL_DIR, f"v{EPISODES}-loss-{loss}")
+	agent.save(MODEL_DIR, f"v{EPISODES:06}")
 	print("Done")
 
-	tensorboard.on_train_end(None)
+	if TRACK_MODEL:
+		tensorboard.on_train_end(None)
 

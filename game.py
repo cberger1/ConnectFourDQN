@@ -3,21 +3,6 @@ import pygame
 import time
 from grid import Grid
 
-# RENDER = True
-
-# # Some game constants
-# SPACING = 5
-# DIAMETER = 100
-# SIZE = (7*(SPACING+DIAMETER)+SPACING, 6*(SPACING+DIAMETER)+SPACING)
-
-# ENCODE_PLAYER = [1, -1] # The first element of ENCODE_PLAYER is attributed to the first player etc.
-
-# # Rewards
-# UNAUTHORIZED = -1
-# ACTION = -0.01
-# WIN = 1
-# DRAW = 0.5
-# LOSE = -1
 
 class Coin(pygame.sprite.Sprite):
 
@@ -61,9 +46,9 @@ class ConnectFourGame:
 		self.clock = pygame.time.Clock() # Get a referecne to the clock
 
 		self.images = [ # Load the images
-			pygame.image.load('Sprites/WhiteCoin.png'), # Empty slot
-			pygame.image.load('Sprites/YellowCoin.png'), # Player 1
-			pygame.image.load('Sprites/RedCoin.png'), # Player -1
+			pygame.image.load('sprites/white_coin.png'), # Empty slot
+			pygame.image.load('sprites/yellow_coin.png'), # Player 1
+			pygame.image.load('sprites/red_coin.png'), # Player -1
 		]
 
 		# Scale images
@@ -146,6 +131,10 @@ class ConnectFourGame:
 			self.slot_sprites.update(self.images[player], self.cell_to_id(cell))
 
 		if cell == None:
+			if self.param["END_ON_UNAUTHORIZED"]:
+				self.winner = player
+				self.over = True
+
 			return self.param["UNAUTHORIZED"], new_state
 
 		if self.grid.is_winning_coin(cell, player):
@@ -159,7 +148,8 @@ class ConnectFourGame:
 
 		return self.param["ACTION"], new_state
 
-	def set_state(self, state):
+	def set_state(self, state, over=False):
+		self.over = over
 		self.grid.set_grid(state)
 
 	def get_state(self):

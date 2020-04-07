@@ -16,7 +16,7 @@ from game import ConnectFourGame
 EPISODES = 2_000
 
 UPDATE_TARGET_MODEL_EVERY = 200
-SAVE_EVERY = 250
+SAVE_EVERY = 200
 PLOT_EVERY = 10
 
 REPLAY_MEMORY_SIZE = 10_000
@@ -27,7 +27,7 @@ GAMMA = 0.999
 
 EPSILON = 1
 EPSILON_DECAY = 0.999
-MIN_EPSILON = 0.05
+MIN_EPSILON = 0.1
 
 RENDER_EVERY = 200
 SHOW_GAME_OVER = False
@@ -123,17 +123,17 @@ class AgentDQN(Player):
 		if model == None:
 			model = Sequential()
 
-			model.add(Convolution2D(16, (4,4), activation="relu", padding="same", input_shape=(7, 6, 1)))
+			model.add(Convolution2D(16, (4,4), padding="same", input_shape=(7, 6, 1), activation="relu"))
 			model.add(Flatten())
 			model.add(Dropout(0.2))
 			model.add(Dense(32, activation="relu"))
 			model.add(Dropout(0.2))
 			model.add(Dense(16, activation="relu"))
-			model.add(Dense(self.param["ACTION_SPACE"], activation="sigmoid"))
+			model.add(Dense(self.param["ACTION_SPACE"]))
 
-			model.compile(optimizer=Adam(), loss="huber_loss")
+			model.compile(optimizer=Adam(), loss="huber_loss") #, activation="tanh")
 
-		print(model.summary())
+		# print(model.summary())
 
 		return model
 
@@ -178,18 +178,23 @@ class AgentDQN(Player):
 				opponent_player = -1 * player
 				opponent_action = self.play(opponent_state, opponent_player, use_target_model=True) # Opponent makes the best possible action
 
-				self.simulator.set_state(opponent_state)
+				self.simulator.set_state(opponent_state, over)
 
 				opponent_reward, new_state = self.simulator.step(opponent_player, opponent_action)
 
-				if opponent_reward == self.param["WIN"]:
-					reward = self.param["LOSE"]
-				elif opponent_reward == self.param["DRAW"]:
-					reward = self.param["DRAW"]
+				if opponent_reward == self.param["WIN"]: # Opponent has won
+					target = self.param["LOSE"]
+				elif opponent_reward == self.param["DRAW"]: # It ended on a draw
+					target = self.param["DRAW"]
+				else:
+					if opponent_reward == self.param["UNAUTHORIZED"] and self.param["END_ON_UNAUTHORIZED"]:
+						# Opponent has made an unauthorized move and the game is over
+						target = self.param["WIN"]
+					else:
+						# The target Q-Value of the played action
+						target = reward + GAMMA * max(self.target_model.predict(player * np.array([new_state]))[0])
 
-				target = reward + GAMMA * max(self.target_model.predict(player * np.array([new_state]))[0]) # The target Q-Value of the played action
-
-			q_values = self.model.predict(player * np.array([state]))[0]
+			q_values = self.model.predict(player * np.array([new_state]))[0]
 
 			q_values[action] = target
 
@@ -200,7 +205,7 @@ class AgentDQN(Player):
 			# 	if new_state[j][0] != 0: # Check if action j is not possible
 			# 		q_values[j] = self.param["UNAUTHORIZED"]
 
-			x.append(state)
+			x.append(player * state)
 			y.append(q_values)
 
 		return self.model.train_on_batch(np.array(x), np.array(y))

@@ -25,6 +25,7 @@ class Settings:
 		"DIAMETER" : 100,
 		"SIZE" : (740 , 636),
 		"ACTION_SPACE" : 7,
+		"END_ON_UNAUTHORIZED" : True,
 		# Rewards
 		"UNAUTHORIZED" : -1,
 		"ACTION" : -0.1,
