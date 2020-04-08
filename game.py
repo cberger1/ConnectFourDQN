@@ -88,7 +88,6 @@ class ConnectFourGame:
 
 			self.display = False
 
-
 	def sync_screen(self):
 		# Syncronize the screen with the grid
 		for coin in self.slot_sprites.sprites():
@@ -122,6 +121,7 @@ class ConnectFourGame:
 		string = "{0:0>2.0f}".format(unique_id) # Some formatting to deal with single didigt numbers
 		return (int(string[0]), int(string[1]))
 
+
 	def step(self, player, action):
 		cell = self.grid.play_coin(player, action) # Play
 
@@ -154,6 +154,12 @@ class ConnectFourGame:
 
 	def get_state(self):
 		return self.grid.get_grid()
+
+	def is_action_authorizied(self, state, action):
+		return self.grid.is_column_full(state, action)
+
+	def valid_actions(self):
+		return self.grid.free_column
 
 	def render(self):
 		if not self.display:

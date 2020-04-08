@@ -7,7 +7,7 @@ import time
 import numpy as np
 
 
-MODEL_PATH = "models/16c-d-32d-16d/1586241222/v2000"
+MODEL_PATH = "models/16c-d-32d-d-32d-16d/1586282246/v002000"
 
 
 # Connect Four Game Example 

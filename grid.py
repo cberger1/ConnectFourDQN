@@ -6,6 +6,7 @@ class Grid:
 	def __init__(self):
 		self.grid = np.zeros((7, 6, 1)) # Initialize grid with zeros
 		self.coin_played = 0 # Keeps track of how many coins are already played
+		self.free_column = list(range(7)) # Keeps track of the free columns
 
 	def __getitem__(self, key):
 		return self.grid[key]
@@ -42,16 +43,26 @@ class Grid:
 				if self.grid[column][row][0] == 0:
 					self.grid[column][row][0] = value # Assign given value
 					self.coin_played += 1 # Increment the played coin counter
+
+					if row == 0:
+						self.free_column.remove(column) # Update the free column set
+
 					return (column, row) # Retrun the cell where the coin was played
 
 	def clear(self):
 		self.grid = np.zeros((7, 6, 1))
+		self.coin_played = 0
+		self.free_column = list(range(7))
 
 	def set_grid(self, grid):
 		self.grid = grid.copy()
 		self.coin_played = 0
+		self.free_column = set(range(7))
 
 		for column in range(7):
+			if self.grid[column][0][0] != 0:
+				self.free_column.remove(column)
+
 			for row in range(6):
 				if self.grid[column][row][0] != 0:
 					self.coin_played += 1
@@ -61,6 +72,9 @@ class Grid:
 
 	def is_full(self):
 		return self.coin_played == 42 # 7*6
+
+	def is_column_full(self, state, column):
+		return state[column][0][0] != 0
 
 	def is_winning_coin(self, cell, value):
 		'''

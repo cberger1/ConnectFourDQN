@@ -5,7 +5,7 @@ import numpy as np
 from collections import deque
 import tensorflow as tf
 from keras.models import Sequential
-from keras.layers import Dense, Convolution2D, Dropout, Flatten
+from keras.layers import Dense, Convolution2D, MaxPooling2D, Dropout, Flatten
 from keras.callbacks import ModelCheckpoint, TensorBoard
 from keras.optimizers import Adam
 from settings import Settings
@@ -13,20 +13,20 @@ from player import Player, PlayerManager
 from game import ConnectFourGame
 
 
-EPISODES = 2_000
+EPISODES = 5_000
 
 UPDATE_TARGET_MODEL_EVERY = 200
 SAVE_EVERY = 200
 PLOT_EVERY = 10
 
 REPLAY_MEMORY_SIZE = 10_000
-MIN_TRAIN_SAMPLE = 100
+MIN_TRAIN_SAMPLE = 1_00 # Avoid overfitting the first houndred samples
 BATCH_SIZE = 32
 
-GAMMA = 0.999
+GAMMA = 0.95
 
 EPSILON = 1
-EPSILON_DECAY = 0.999
+EPSILON_DECAY = 0.9995
 MIN_EPSILON = 0.1
 
 RENDER_EVERY = 200
@@ -36,11 +36,12 @@ MAX_ACTIONS = 7 * 6
 '''
 Model naming:
 Conv2D : {filters}c
+MaxPooling2D : m
 Dense : {units}d
 Dropout : d
 '''
 
-MODEL_NAME = "16c-d-32d-16d"
+MODEL_NAME = "8c-d-32d-d-16d"
 
 
 class OneHotEncoder:
@@ -123,17 +124,19 @@ class AgentDQN(Player):
 		if model == None:
 			model = Sequential()
 
-			model.add(Convolution2D(16, (4,4), padding="same", input_shape=(7, 6, 1), activation="relu"))
+			model.add(Convolution2D(8, (4, 4), padding="valid", input_shape=(7, 6, 1), activation="relu"))
+			# model.add(MaxPooling2D(pool_size=(2, 2), padding='valid'))
 			model.add(Flatten())
 			model.add(Dropout(0.2))
 			model.add(Dense(32, activation="relu"))
 			model.add(Dropout(0.2))
+			# model.add(Dense(32, activation="relu"))
 			model.add(Dense(16, activation="relu"))
-			model.add(Dense(self.param["ACTION_SPACE"]))
+			model.add(Dense(self.param["ACTION_SPACE"], activation="tanh"))
 
-			model.compile(optimizer=Adam(), loss="huber_loss") #, activation="tanh")
+			model.compile(optimizer=Adam(), loss="mse")
 
-		# print(model.summary())
+		print(model.summary())
 
 		return model
 
@@ -143,7 +146,6 @@ class AgentDQN(Player):
 		self.target_model.save(f"{directory}/{name}")
 
 	def play(self, state, player, epsilon=0, use_target_model=False):
-		global EPSILON
 		# First compute the Q-Values, then return the index with the highest Q-Value aka the action
 		if use_target_model:
 			return np.argmax(self.target_model.predict(player * np.array([state]))[0])
@@ -172,13 +174,12 @@ class AgentDQN(Player):
 			state, player, action, reward, opponent_state, over = sample[i]
 
 			if over:
-				new_state = state
 				target = reward
 			else:
+				self.simulator.set_state(opponent_state, over)
+
 				opponent_player = -1 * player
 				opponent_action = self.play(opponent_state, opponent_player, use_target_model=True) # Opponent makes the best possible action
-
-				self.simulator.set_state(opponent_state, over)
 
 				opponent_reward, new_state = self.simulator.step(opponent_player, opponent_action)
 
@@ -194,16 +195,14 @@ class AgentDQN(Player):
 						# The target Q-Value of the played action
 						target = reward + GAMMA * max(self.target_model.predict(player * np.array([new_state]))[0])
 
-			q_values = self.model.predict(player * np.array([new_state]))[0]
+			q_values = self.model.predict(player * np.array([state]))[0]
 
 			q_values[action] = target
 
-			# for j in range(self.param["ACTION_SPACE"]):
-			# 	if j == action:
-			# 		q_values[j] = target
-
-			# 	if new_state[j][0] != 0: # Check if action j is not possible
-			# 		q_values[j] = self.param["UNAUTHORIZED"]
+			# Helping the model train faster
+			for a in range(self.param["ACTION_SPACE"]):
+				if self.simulator.is_action_authorizied(state, a): # Check if action a is not possible
+					q_values[a] = self.param["UNAUTHORIZED"]
 
 			x.append(player * state)
 			y.append(q_values)

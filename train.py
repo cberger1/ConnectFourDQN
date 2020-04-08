@@ -2,12 +2,13 @@ from settings import Settings
 from game import ConnectFourGame
 from player import Player, PlayerManager
 from bot import *
-import keras
-import tensorflow as tf
-from keras.callbacks import TensorBoard, ModelCheckpoint
-from tensorflow.python.client import device_lib
-# from keras.models import load_model
 import time
+import random
+import tensorflow as tf
+from tensorflow.python.client import device_lib
+from keras.callbacks import TensorBoard, ModelCheckpoint
+from keras.backend.tensorflow_backend import set_session
+# from keras.models import load_model
 
 
 MODEL_DIR = f"models/{MODEL_NAME}/{int(time.time())}"
@@ -16,10 +17,7 @@ TRACK_MODEL = True
 
 # Training Script
 if __name__ == '__main__':
-	print(device_lib.list_local_devices())
-	# physical_devices = tf.config.experimental.list_physical_devices("GPU")
-	# tf.config.experimental.set_memory_growth(physical_devices[0], True)
-
+	
 	display = False
 
 	param = Settings(ACTION=-0.01)
@@ -32,7 +30,7 @@ if __name__ == '__main__':
 	player_manager = PlayerManager(agent)
 
 	if TRACK_MODEL:
-		tensorboard = TensorBoard(log_dir=f"logs\{MODEL_NAME}-{int(time.time())}")
+		tensorboard = TensorBoard(log_dir=f"logs/{MODEL_NAME}-{int(time.time())}")
 		tensorboard.set_model(agent.model)
 
 	loss = 0
@@ -43,15 +41,19 @@ if __name__ == '__main__':
 		display = episode % RENDER_EVERY == 0
 
 		env.set_display_mode(display)
-		
+
 		state = env.reset(display)
 		steps = 0
 		
+		# Decay epsilon
+		epsilon = max(MIN_EPSILON, epsilon * EPSILON_DECAY)
+
 		while not env.over and steps <= MAX_ACTIONS:
-			# Decay epsilon
-			epsilon = max(MIN_EPSILON, epsilon * EPSILON_DECAY)
 
 			player, action = player_manager.play(state=state, epsilon=epsilon)
+
+			if not action in env.valid_actions():
+				action = random.choice(env.valid_actions())
 
 			reward, new_state = env.step(player, action)
 

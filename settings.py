@@ -28,7 +28,7 @@ class Settings:
 		"END_ON_UNAUTHORIZED" : True,
 		# Rewards
 		"UNAUTHORIZED" : -1,
-		"ACTION" : -0.1,
+		"ACTION" : -0.01,
 		"WIN" : 1,
 		"DRAW" : 0.5,
 		"LOSE" : -1,
