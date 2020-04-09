@@ -20,7 +20,7 @@ if __name__ == '__main__':
 	
 	display = False
 
-	param = Settings(ACTION=-0.01)
+	param = Settings()
 
 	env = ConnectFourGame(param, display)
 
@@ -43,6 +43,7 @@ if __name__ == '__main__':
 		env.set_display_mode(display)
 
 		state = env.reset(display)
+
 		steps = 0
 		
 		# Decay epsilon
@@ -57,10 +58,10 @@ if __name__ == '__main__':
 
 			reward, new_state = env.step(player, action)
 
-			agent.update_replay_memory(state, player, action, reward, new_state, env.over) # Add sample to the database of the agent
+			agent.update_replay_memory(np.copy(state), player, action, reward, np.copy(new_state), env.over) # Add sample to the database of the agent
 			loss += agent.train() # Will only train if enough samples are available
 
-			state = new_state
+			state = np.copy(new_state)
 			steps += 1
 
 			if display:

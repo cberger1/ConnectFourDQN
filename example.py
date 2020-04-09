@@ -7,7 +7,7 @@ import time
 import numpy as np
 
 
-MODEL_PATH = "models/16c-d-32d-d-32d-16d/1586282246/v002000"
+MODEL_PATH = "models/16c-d-64d-d-32d-16d/1586415595/v003000"
 
 
 # Connect Four Game Example 
@@ -20,7 +20,7 @@ if __name__ == "__main__":
 	player = Player(param)
 	bot = AgentDQN(param, model=load_model(MODEL_PATH))
 
-	player_manager = PlayerManager(player, bot)
+	player_manager = PlayerManager(bot)
 		
 	state = game.get_state()
 
@@ -28,11 +28,13 @@ if __name__ == "__main__":
 		prediction = bot.model.predict(np.array([state]))
 		print(np.round(prediction, 2))
 
-		player, action = player_manager.play(state=state) # Passing the state for the AgentDQN
+		player, action = player_manager.play(state=state) # Passing state for the AgentDQN
 
 		reward, new_state = game.step(player, action)
+
+		game.pause(0.5)
 		
-		state = new_state
+		state = np.copy(new_state)
 
 		if DISPLAY:
 			game.render()

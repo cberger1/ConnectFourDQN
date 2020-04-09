@@ -4,7 +4,7 @@ import numpy as np
 class Grid:
 
 	def __init__(self):
-		self.grid = np.zeros((7, 6, 1)) # Initialize grid with zeros
+		self.grid = np.zeros((7, 6, 1), dtype=np.int8) # Initialize grid with zeros
 		self.coin_played = 0 # Keeps track of how many coins are already played
 		self.free_column = list(range(7)) # Keeps track of the free columns
 
@@ -26,7 +26,7 @@ class Grid:
 			string += "|"
 
 			for row in range(6):
-				string += " " + str(int(self.grid[column][row][0])) + " |"
+				string += f" {int(self.grid[column][row][0]): 2} |"
 
 			string += "\n"
 
@@ -68,7 +68,7 @@ class Grid:
 					self.coin_played += 1
 
 	def get_grid(self):
-		return self.grid
+		return np.copy(self.grid)
 
 	def is_full(self):
 		return self.coin_played == 42 # 7*6

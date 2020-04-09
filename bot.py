@@ -13,20 +13,20 @@ from player import Player, PlayerManager
 from game import ConnectFourGame
 
 
-EPISODES = 5_000
+EPISODES = 3_000
 
 UPDATE_TARGET_MODEL_EVERY = 200
 SAVE_EVERY = 200
 PLOT_EVERY = 10
 
 REPLAY_MEMORY_SIZE = 10_000
-MIN_TRAIN_SAMPLE = 1_00 # Avoid overfitting the first houndred samples
+MIN_TRAIN_SAMPLE = 1_000 # Avoid overfitting the first houndred samples
 BATCH_SIZE = 32
 
 GAMMA = 0.95
 
 EPSILON = 1
-EPSILON_DECAY = 0.9995
+EPSILON_DECAY = 0.999
 MIN_EPSILON = 0.1
 
 RENDER_EVERY = 200
@@ -41,7 +41,7 @@ Dense : {units}d
 Dropout : d
 '''
 
-MODEL_NAME = "8c-d-32d-d-16d"
+MODEL_NAME = "16c-d-64d-d-32d-16d"
 
 
 class OneHotEncoder:
@@ -98,13 +98,10 @@ class AgentDQN(Player):
 		self.param = param
 
 		# Unstable Model
-		if model != None:
-			self.model = model
-		else:
-			self.model = self.create_model()
+		self.model = self.create_model(model)
 
 		# Stable Model
-		self.target_model = self.create_model()
+		self.target_model = self.create_model(model)
 		# Syncronize taget_model with model
 		self.update_target_model()
 
@@ -124,13 +121,13 @@ class AgentDQN(Player):
 		if model == None:
 			model = Sequential()
 
-			model.add(Convolution2D(8, (4, 4), padding="valid", input_shape=(7, 6, 1), activation="relu"))
+			model.add(Convolution2D(16, (4, 4), padding="valid", input_shape=(7, 6, 1), activation="relu"))
 			# model.add(MaxPooling2D(pool_size=(2, 2), padding='valid'))
 			model.add(Flatten())
 			model.add(Dropout(0.2))
-			model.add(Dense(32, activation="relu"))
+			model.add(Dense(64, activation="relu"))
 			model.add(Dropout(0.2))
-			# model.add(Dense(32, activation="relu"))
+			model.add(Dense(32, activation="relu"))
 			model.add(Dense(16, activation="relu"))
 			model.add(Dense(self.param["ACTION_SPACE"], activation="tanh"))
 
@@ -165,13 +162,15 @@ class AgentDQN(Player):
 		if len(self.replay_memory) < MIN_TRAIN_SAMPLE:
 			return 0
 
-		sample = random.sample(self.replay_memory, BATCH_SIZE)
+		sample = random.choices(self.replay_memory, k=BATCH_SIZE)
 
 		x = []
 		y = [] 
 
 		for i in range(BATCH_SIZE):
 			state, player, action, reward, opponent_state, over = sample[i]
+
+			q_values = self.model.predict(player * np.array([state]))[0]
 
 			if over:
 				target = reward
@@ -194,8 +193,6 @@ class AgentDQN(Player):
 					else:
 						# The target Q-Value of the played action
 						target = reward + GAMMA * max(self.target_model.predict(player * np.array([new_state]))[0])
-
-			q_values = self.model.predict(player * np.array([state]))[0]
 
 			q_values[action] = target
 
