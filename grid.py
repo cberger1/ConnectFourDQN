@@ -45,7 +45,7 @@ class Grid:
 					self.coin_played += 1 # Increment the played coin counter
 
 					if row == 0:
-						self.free_column.remove(column) # Update the free column set
+						self.free_column.remove(column) # Update the free column list
 
 					return (column, row) # Retrun the cell where the coin was played
 
@@ -57,7 +57,7 @@ class Grid:
 	def set_grid(self, grid):
 		self.grid = grid.copy()
 		self.coin_played = 0
-		self.free_column = set(range(7))
+		self.free_column = list(range(7))
 
 		for column in range(7):
 			if self.grid[column][0][0] != 0:

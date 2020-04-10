@@ -3,14 +3,15 @@ import time
 import os
 import numpy as np
 from collections import deque
-import tensorflow as tf
+from multiprocessing import Pool, Queue, Lock
 from keras.models import Sequential
-from keras.layers import Dense, Convolution2D, MaxPooling2D, Dropout, Flatten
+from keras.layers import Dense, Convolution2D, MaxPooling2D, Dropout, Flatten, Reshape
 from keras.callbacks import ModelCheckpoint, TensorBoard
 from keras.optimizers import Adam
 from settings import Settings
 from player import Player, PlayerManager
 from game import ConnectFourGame
+
 
 
 EPISODES = 3_000
@@ -41,7 +42,7 @@ Dense : {units}d
 Dropout : d
 '''
 
-MODEL_NAME = "16c-d-64d-d-32d-16d"
+MODEL_NAME = "128d-128d-128d-64d"
 
 
 class OneHotEncoder:
@@ -121,14 +122,16 @@ class AgentDQN(Player):
 		if model == None:
 			model = Sequential()
 
-			model.add(Convolution2D(16, (4, 4), padding="valid", input_shape=(7, 6, 1), activation="relu"))
+			model.add(Reshape((42,), input_shape=(7, 6, 1)))
+			# model.add(Convolution2D(16, (4, 4), padding="valid", input_shape=(7, 6, 1), activation="relu"))
 			# model.add(MaxPooling2D(pool_size=(2, 2), padding='valid'))
-			model.add(Flatten())
-			model.add(Dropout(0.2))
+			# model.add(Flatten())
+			# model.add(Dropout(0.2))
+			# model.add(Dropout(0.2))
+			model.add(Dense(128, activation="relu"))
+			model.add(Dense(128, activation="relu"))
+			model.add(Dense(128, activation="relu"))
 			model.add(Dense(64, activation="relu"))
-			model.add(Dropout(0.2))
-			model.add(Dense(32, activation="relu"))
-			model.add(Dense(16, activation="relu"))
 			model.add(Dense(self.param["ACTION_SPACE"], activation="tanh"))
 
 			model.compile(optimizer=Adam(), loss="mse")
@@ -158,9 +161,114 @@ class AgentDQN(Player):
 	def update_target_model(self):
 		self.target_model.set_weights(self.model.get_weights())
 
+	def optimize(self):
+		if len(self.replay_memory) < MIN_TRAIN_SAMPLE:
+			return 0
+
+		setup_start = time.time()
+
+		x = []
+		y = []
+
+		samples = random.choices(self.replay_memory, k=BATCH_SIZE)
+
+		with Pool() as pool:
+			tasks = Queue()
+
+			lock = Lock()
+
+			for sample in samples:
+				tasks.put(sample)
+
+			tasks.close()
+
+			results = pool.map("self.prepare_sample", [tasks, lock]) # , [tasks, outs, lock])
+			
+			pool.close()
+			pool.join()
+
+			for i in range(BATCH_SIZE):
+				state, q_values = results[i]
+
+				x.append(state)
+				y.append(q_values)
+
+		setup_end = time.time()
+		setup_time = setup_end - setup_start
+
+		train_start = time.time()
+		loss = self.model.train_on_batch(np.array(x), np.array(y))
+		train_end = time.time()
+		train_time = train_end - train_start
+
+		print(f"Setup : {round(setup_time, 3)}, Training : {round(train_time, 3)}, Ratio : {round(setup_time / train_time, 3)}")
+
+		return loss
+
+
+	def prepare_sample(self, tasks, lock):
+
+		with lock:
+			param = self.param
+
+		simulator = ConnectFourGame(param, display=False)
+		results = []
+
+		while True:
+			if tasks.empty():
+				break
+			else:
+				state, player, action, reward, opponent_state, over = sample[i]
+
+				with lock:
+					q_values = self.model.predict(player * np.array([state]))[0]
+
+				if over:
+					target = reward
+				else:
+					simulator.set_state(opponent_state, over)
+
+					opponent_player = -1 * player
+
+					with lock:
+						opponent_action = self.play(opponent_state, opponent_player, use_target_model=True) # Opponent makes the best possible action
+
+					if not opponent_action in simulator.valid_actions():
+						opponent_action = random.choice(simulator.valid_actions())
+
+					opponent_reward, new_state = simulator.step(opponent_player, opponent_action)
+
+					if opponent_reward == param["WIN"]: # Opponent has won
+						target = param["LOSE"]
+					elif opponent_reward == param["DRAW"]: # It ended on a draw
+						target = param["DRAW"]
+					else:
+						if opponent_reward == param["UNAUTHORIZED"] and param["END_ON_UNAUTHORIZED"]:
+							# Opponent has made an unauthorized move and the game is over
+							target = param["WIN"]
+						else:
+							# The target Q-Value of the played action
+							with lock:
+								target = reward + GAMMA * max(self.target_model.predict(player * np.array([new_state]))[0])
+
+				q_values[action] = target
+
+				# Helping the model train faster
+				for a in range(param["ACTION_SPACE"]):
+					if simulator.is_action_authorizied(state, a): # Check if action a is not possible
+						q_values[a] = param["UNAUTHORIZED"]
+
+				results.append((player * state, q_values))
+
+		return results
+
+
+
 	def train(self):
 		if len(self.replay_memory) < MIN_TRAIN_SAMPLE:
 			return 0
+
+		setup_start = time.time()
 
 		sample = random.choices(self.replay_memory, k=BATCH_SIZE)
 
@@ -179,6 +287,9 @@ class AgentDQN(Player):
 
 				opponent_player = -1 * player
 				opponent_action = self.play(opponent_state, opponent_player, use_target_model=True) # Opponent makes the best possible action
+
+				if not opponent_action in self.simulator.valid_actions():
+					opponent_action = random.choice(self.simulator.valid_actions())
 
 				opponent_reward, new_state = self.simulator.step(opponent_player, opponent_action)
 
@@ -204,4 +315,14 @@ class AgentDQN(Player):
 			x.append(player * state)
 			y.append(q_values)
 
-		return self.model.train_on_batch(np.array(x), np.array(y))
+			setup_end = time.time()
+			setup_time = setup_end - setup_start
+
+			train_start = time.time()
+			loss = self.model.train_on_batch(np.array(x), np.array(y))
+			train_end = time.time()
+			train_time = train_end - train_start
+
+			print(f"Setup : {round(setup_time, 3)}, Training : {round(train_time, 3)}, Ratio : {round(setup_time / train_time, 3)}")
+
+		return loss

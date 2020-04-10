@@ -7,7 +7,7 @@ import time
 import numpy as np
 
 
-MODEL_PATH = "models/16c-d-64d-d-32d-16d/1586415595/v003000"
+MODEL_PATH = "models/64d-64d-32d-16d/1586447164/v003000"
 
 
 # Connect Four Game Example 
@@ -20,7 +20,7 @@ if __name__ == "__main__":
 	player = Player(param)
 	bot = AgentDQN(param, model=load_model(MODEL_PATH))
 
-	player_manager = PlayerManager(bot)
+	player_manager = PlayerManager(bot) #, player)
 		
 	state = game.get_state()
 

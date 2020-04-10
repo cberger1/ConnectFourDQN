@@ -392,7 +392,7 @@
 			"file": "/D/Colin Berger/Documents/Python/ConnectFourDQN/grid.py",
 			"settings":
 			{
-				"buffer_size": 3071,
+				"buffer_size": 3088,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
@@ -419,25 +419,7 @@
 			"file": "/D/Colin Berger/Documents/Python/ConnectFourDQN/bot.py",
 			"settings":
 			{
-				"buffer_size": 5719,
-				"encoding": "UTF-8",
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "/D/Colin Berger/Documents/Python/ConnectFourDQN/generator.py",
-			"settings":
-			{
-				"buffer_size": 2601,
-				"encoding": "UTF-8",
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "/D/Colin Berger/Documents/Python/ConnectFourDQN/brain.py",
-			"settings":
-			{
-				"buffer_size": 1885,
+				"buffer_size": 5834,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
@@ -446,7 +428,7 @@
 			"file": "/D/Colin Berger/Documents/Python/ConnectFourDQN/train.py",
 			"settings":
 			{
-				"buffer_size": 2432,
+				"buffer_size": 2527,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
@@ -455,7 +437,7 @@
 			"file": "/D/Colin Berger/Documents/Python/ConnectFourDQN/example.py",
 			"settings":
 			{
-				"buffer_size": 938,
+				"buffer_size": 966,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
@@ -541,10 +523,14 @@
 	},
 	"expanded_folders":
 	[
-		"/D/Colin Berger/Documents/Python/ConnectFourDQN"
+		"/D/Colin Berger/Documents/Python/ConnectFourDQN",
+		"/D/Colin Berger/Documents/Python/ConnectFourDQN/models",
+		"/D/Colin Berger/Documents/Python/ConnectFourDQN/models/64d-64d-32d-16d"
 	],
 	"file_history":
 	[
+		"/D/Colin Berger/Documents/Python/ConnectFourDQN/generator.py",
+		"/D/Colin Berger/Documents/Python/ConnectFourDQN/brain.py",
 		"/D/Colin Berger/Documents/Python/ConnectFourDQN/bot.py",
 		"/D/Colin Berger/Documents/Python/ConnectFourDQN/visualisation.py",
 		"/D/Colin Berger/Documents/Python/ConnectFourDQN/settings.py",
@@ -662,7 +648,7 @@
 	"groups":
 	[
 		{
-			"selected": 4,
+			"selected": 6,
 			"sheets":
 			[
 				{
@@ -678,8 +664,8 @@
 						"selection":
 						[
 							[
-								2620,
-								2620
+								3684,
+								3684
 							]
 						],
 						"settings":
@@ -688,10 +674,10 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 8.0,
+						"translation.y": 2768.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 8,
+					"stack_index": 6,
 					"type": "text"
 				},
 				{
@@ -700,15 +686,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 3071,
+						"buffer_size": 3088,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1749,
-								1763
+								520,
+								520
 							]
 						],
 						"settings":
@@ -775,7 +761,7 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 1104.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 3,
@@ -787,15 +773,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 5719,
+						"buffer_size": 5834,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								5324,
+								5324
 							]
 						],
 						"settings":
@@ -804,35 +790,36 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 3496.0,
+						"translation.y": 2024.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 2,
 					"type": "text"
 				},
 				{
 					"buffer": 5,
-					"file": "/D/Colin Berger/Documents/Python/ConnectFourDQN/generator.py",
+					"file": "/D/Colin Berger/Documents/Python/ConnectFourDQN/train.py",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 2601,
+						"buffer_size": 2527,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1275,
-								1275
+								473,
+								473
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/Python/Python.sublime-syntax"
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 1426.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 1,
@@ -840,76 +827,19 @@
 				},
 				{
 					"buffer": 6,
-					"file": "/D/Colin Berger/Documents/Python/ConnectFourDQN/brain.py",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1885,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1828,
-								1828
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Python/Python.sublime-syntax"
-						},
-						"translation.x": 0.0,
-						"translation.y": 736.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 2,
-					"type": "text"
-				},
-				{
-					"buffer": 7,
-					"file": "/D/Colin Berger/Documents/Python/ConnectFourDQN/train.py",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 2432,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								682,
-								682
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Python/Python.sublime-syntax",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 552.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 7,
-					"type": "text"
-				},
-				{
-					"buffer": 8,
 					"file": "/D/Colin Berger/Documents/Python/ConnectFourDQN/example.py",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 938,
+						"buffer_size": 966,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								264,
-								264
+								260,
+								260
 							]
 						],
 						"settings":
@@ -920,7 +850,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 6,
+					"stack_index": 0,
 					"type": "text"
 				}
 			]
@@ -959,7 +889,7 @@
 	"menu_visible": true,
 	"output.exec":
 	{
-		"height": 270.0
+		"height": 227.0
 	},
 	"output.find_results":
 	{

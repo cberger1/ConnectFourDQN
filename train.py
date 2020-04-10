@@ -8,12 +8,13 @@ import tensorflow as tf
 from tensorflow.python.client import device_lib
 from keras.callbacks import TensorBoard, ModelCheckpoint
 from keras.backend.tensorflow_backend import set_session
-# from keras.models import load_model
+from keras.models import load_model
 
 
 MODEL_DIR = f"models/{MODEL_NAME}/{int(time.time())}"
+MODEL_PATH = "models/64d-64d-32d-16d/1586434040/v003000"
 
-TRACK_MODEL = True
+TRACK_MODEL = False
 
 # Training Script
 if __name__ == '__main__':
@@ -24,7 +25,7 @@ if __name__ == '__main__':
 
 	env = ConnectFourGame(param, display)
 
-	agent = AgentDQN(param)
+	agent = AgentDQN(param) # , load_model(MODEL_PATH))
 	agent_random = AgentRadnom()
 
 	player_manager = PlayerManager(agent)
@@ -50,7 +51,6 @@ if __name__ == '__main__':
 		epsilon = max(MIN_EPSILON, epsilon * EPSILON_DECAY)
 
 		while not env.over and steps <= MAX_ACTIONS:
-
 			player, action = player_manager.play(state=state, epsilon=epsilon)
 
 			if not action in env.valid_actions():
@@ -59,7 +59,8 @@ if __name__ == '__main__':
 			reward, new_state = env.step(player, action)
 
 			agent.update_replay_memory(np.copy(state), player, action, reward, np.copy(new_state), env.over) # Add sample to the database of the agent
-			loss += agent.train() # Will only train if enough samples are available
+			loss += agent.optimize()
+			# loss += agent.train() # Will only train if enough samples are available
 
 			state = np.copy(new_state)
 			steps += 1

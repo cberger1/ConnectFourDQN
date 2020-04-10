@@ -98,4 +98,4 @@ class Generator(Sequence):
 					if simulator.is_action_authorizied(state, a): # Check if action a is not possible
 						q_values[a] = param["UNAUTHORIZED"]
 
-				outs.put((state, q_values))
+				outs.put((player * state, q_values))
