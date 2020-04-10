@@ -34,7 +34,10 @@ if __name__ == '__main__':
 		tensorboard = TensorBoard(log_dir=f"logs/{MODEL_NAME}-{int(time.time())}")
 		tensorboard.set_model(agent.model)
 
-	loss = 0
+	total_loss = 0
+	total_setup_time = 0
+	total_train_time = 0
+	total_simulation_time = 0
 	epsilon = EPSILON
 
 	for episode in range(EPISODES):
@@ -59,8 +62,12 @@ if __name__ == '__main__':
 			reward, new_state = env.step(player, action)
 
 			agent.update_replay_memory(np.copy(state), player, action, reward, np.copy(new_state), env.over) # Add sample to the database of the agent
-			loss += agent.optimize()
-			# loss += agent.train() # Will only train if enough samples are available
+			# loss, setup_time, train_time, simulation_time = agent.optimize()
+			loss, setup_time, train_time = agent.train()
+			total_loss += loss
+			total_setup_time += setup_time
+			total_train_time += train_time
+			total_simulation_time += 1 # simulation_time
 
 			state = np.copy(new_state)
 			steps += 1
@@ -74,8 +81,22 @@ if __name__ == '__main__':
 
 		if episode % PLOT_EVERY == 0 and episode != 0:
 			if TRACK_MODEL:
-				tensorboard.on_epoch_end(episode, {"loss" : loss/PLOT_EVERY})
-			loss = 0
+				tensorboard.on_epoch_end(episode, {"loss" : total_loss / PLOT_EVERY})
+			
+			setup = round(total_setup_time / PLOT_EVERY, 3)
+			train = round(total_train_time / PLOT_EVERY, 3)
+			simulation = round(total_simulation_time / PLOT_EVERY, 3)
+			if train != 0:
+				ratio = round(setup / train, 3)
+			else:
+				ratio = None
+
+			print(f"Setup : {setup}, Training : {train}, Ratio : {ratio}, Simulation : {simulation}")
+
+			total_loss = 0
+			total_setup_time = 0
+			total_train_time = 0
+			total_simulation_time = 0
 
 		if episode % UPDATE_TARGET_MODEL_EVERY == 0 and episode != 0: # If necessary update target model
 			print("Episode : ", episode)

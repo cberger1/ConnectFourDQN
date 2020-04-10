@@ -2,14 +2,17 @@ import random
 import time
 import os
 import numpy as np
+import warnings
 from collections import deque
-from multiprocessing import Pool, Queue, Lock
+from threading import Thread, Lock
+from queue import Queue
 from keras.models import Sequential
 from keras.layers import Dense, Convolution2D, MaxPooling2D, Dropout, Flatten, Reshape
 from keras.callbacks import ModelCheckpoint, TensorBoard
 from keras.optimizers import Adam
 from settings import Settings
 from player import Player, PlayerManager
+from grid import Grid
 from game import ConnectFourGame
 
 
@@ -163,110 +166,109 @@ class AgentDQN(Player):
 
 	def optimize(self):
 		if len(self.replay_memory) < MIN_TRAIN_SAMPLE:
-			return 0
+			return (0, 0, 0, 0)
 
-		setup_start = time.time()
+		setup_start = time.time() # Start Timer
 
-		x = []
-		y = []
+		samples = random.choices(self.replay_memory, k=BATCH_SIZE) # Get a random batch
 
-		samples = random.choices(self.replay_memory, k=BATCH_SIZE)
+		states, players, actions, rewards, opponent_states, overs = zip(*samples) # Exctract from batch
 
-		with Pool() as pool:
-			tasks = Queue()
+		q_values = self.model.predict(np.array([players[i] * states[i] for i in range(BATCH_SIZE)])) # Compute the q_values
 
-			lock = Lock()
+		predictions = self.target_model.predict(np.array([-1 * players[i] * opponent_states[i] for i in range(BATCH_SIZE)]))
+		opponent_actions = np.argmax(predictions, axis=1)
 
-			for sample in samples:
-				tasks.put(sample)
+		simulation_start = time.time()
 
-			tasks.close()
+		tasks = Queue()
+		outs = Queue()
 
-			results = pool.map("self.prepare_sample", [tasks, lock]) # , [tasks, outs, lock])
-			
-			pool.close()
-			pool.join()
+		for i in range(BATCH_SIZE):
+			tasks.put((rewards[i], overs[i], opponent_states[i], -1 * players[i], opponent_actions[i]))
 
-			for i in range(BATCH_SIZE):
-				state, q_values = results[i]
+		threads = [Thread(target=self.simulate, args=[tasks, outs]) for _ in range(BATCH_SIZE)]
 
-				x.append(state)
-				y.append(q_values)
+		for thread in threads:
+			thread.start()
+
+		for thread in threads:
+			thread.join()
+
+		new_states = []
+		targets = []
+
+		for _ in range(BATCH_SIZE):
+			new_state, target = outs.get()
+			new_states.append(new_states)
+			targets.append(target)
+
+		simulation_end = time.time()
+
+		expectations = np.amax(self.target_model.predict(np.array([players[i] * states[i] for i in range(BATCH_SIZE)])), axis=1)
+
+		for i in range(BATCH_SIZE):
+			if targets[i] == None:
+				targets[i] = rewards[i] + GAMMA * expectations[i]
+
+			q_values[i][actions[i]] = targets[i]
 
 		setup_end = time.time()
-		setup_time = setup_end - setup_start
 
 		train_start = time.time()
-		loss = self.model.train_on_batch(np.array(x), np.array(y))
+		loss = self.model.train_on_batch(np.array(states), np.array(q_values))
 		train_end = time.time()
+
+		simulation_time = simulation_end - simulation_start
+		setup_time = setup_end - setup_start
 		train_time = train_end - train_start
 
-		print(f"Setup : {round(setup_time, 3)}, Training : {round(train_time, 3)}, Ratio : {round(setup_time / train_time, 3)}")
+		# print(f"Setup : {round(setup_time, 3)}, Training : {round(train_time, 3)}, Ratio : {round(setup_time / train_time, 3)}")
 
-		return loss
+		return (loss, setup_time, train_time, simulation_time)
 
+	def simulate(self, tasks, outs):
+		'''
+		A Grid is used for simulating the opponent
+		It's chosen over a more high level ConnectFourGame approach
+		Because of drastic performance improvement
+		'''
 
-	def prepare_sample(self, tasks, lock):
+		grid = Grid()
 
-		with lock:
-			param = self.param
+		reward, over, opponent_state, opponent_player, opponent_action = tasks.get()
 
-		simulator = ConnectFourGame(param, display=False)
-		results = []
+		if over:
+			new_state = opponent_state
+			target = reward
+		else:
+			grid.set_grid(opponent_state)
 
-		while True:
-			if tasks.empty():
-				break
+			if not opponent_action in grid.free_column:
+				opponent_action = random.choice(grid.free_column)
+
+			cell = grid.play_coin(opponent_player, opponent_action)
+
+			# No need to check for UNAUTHORIZED because only valid actions can be chosen
+			# if cell == None and self.param["END_ON_UNAUTHORIZED"]:
+			# 	target = self.param["WIN"]
+
+			if grid.is_winning_coin(cell, opponent_player):
+				target = self.param["LOSE"]
+			elif grid.is_full():
+				target = self.param["DRAW"]
 			else:
-				state, player, action, reward, opponent_state, over = sample[i]
+				target = None
 
-				with lock:
-					q_values = self.model.predict(player * np.array([state]))[0]
+			new_state = grid.get_grid()
 
-				if over:
-					target = reward
-				else:
-					simulator.set_state(opponent_state, over)
-
-					opponent_player = -1 * player
-
-					with lock:
-						opponent_action = self.play(opponent_state, opponent_player, use_target_model=True) # Opponent makes the best possible action
-
-					if not opponent_action in simulator.valid_actions():
-						opponent_action = random.choice(simulator.valid_actions())
-
-					opponent_reward, new_state = simulator.step(opponent_player, opponent_action)
-
-					if opponent_reward == param["WIN"]: # Opponent has won
-						target = param["LOSE"]
-					elif opponent_reward == param["DRAW"]: # It ended on a draw
-						target = param["DRAW"]
-					else:
-						if opponent_reward == param["UNAUTHORIZED"] and param["END_ON_UNAUTHORIZED"]:
-							# Opponent has made an unauthorized move and the game is over
-							target = param["WIN"]
-						else:
-							# The target Q-Value of the played action
-							with lock:
-								target = reward + GAMMA * max(self.target_model.predict(player * np.array([new_state]))[0])
-
-				q_values[action] = target
-
-				# Helping the model train faster
-				for a in range(param["ACTION_SPACE"]):
-					if simulator.is_action_authorizied(state, a): # Check if action a is not possible
-						q_values[a] = param["UNAUTHORIZED"]
-
-				results.append((player * state, q_values))
-
-		return results
-
-
+		outs.put((new_state, target))
 
 	def train(self):
+		warnings.warn("This function is super slow! Please consider using optimze!")
+
 		if len(self.replay_memory) < MIN_TRAIN_SAMPLE:
-			return 0
+			return (0, 0, 0)
 
 		setup_start = time.time()
 
@@ -323,6 +325,6 @@ class AgentDQN(Player):
 			train_end = time.time()
 			train_time = train_end - train_start
 
-			print(f"Setup : {round(setup_time, 3)}, Training : {round(train_time, 3)}, Ratio : {round(setup_time / train_time, 3)}")
+			# print(f"Setup : {round(setup_time, 3)}, Training : {round(train_time, 3)}, Ratio : {round(setup_time / train_time, 3)}")
 
-		return loss
+		return (loss, setup_time, train_time)
