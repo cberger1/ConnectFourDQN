@@ -1,0 +1,8 @@
+# Python Test Files
+multitest.py
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+
+# Sublime Project / Workspace
+sublime/

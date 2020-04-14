@@ -4,6 +4,62 @@
 		"selected_items":
 		[
 			[
+				"Pr",
+				"PROCESSES"
+			],
+			[
+				"res",
+				"results\tQueue ⟠"
+			],
+			[
+				"opp",
+				"opponent_actions"
+			],
+			[
+				"is",
+				"is_winning_coin\tfunction ⟠"
+			],
+			[
+				"sim",
+				"simulation_time\tfloat ⟠"
+			],
+			[
+				"si",
+				"simulation_start\tfloat ⟠"
+			],
+			[
+				"tra",
+				"train_time\tunknown ⟠"
+			],
+			[
+				"to",
+				"total_train_time\tint ⟠"
+			],
+			[
+				"tol",
+				"total_setup_time\tint ⟠"
+			],
+			[
+				"on",
+				"opponent_states\tlist ⟠"
+			],
+			[
+				"rand",
+				"random()\tfunction ⟠"
+			],
+			[
+				"lo",
+				"load_model\tfunction ⟠"
+			],
+			[
+				"c",
+				"clone_model\tfunction ⟠"
+			],
+			[
+				"sam",
+				"samples\tlist ⟠"
+			],
+			[
 				"train",
 				"train_time"
 			],
@@ -14,10 +70,6 @@
 			[
 				"set",
 				"setup_start\tfloat ⟠"
-			],
-			[
-				"tra",
-				"train_time"
 			],
 			[
 				"ste",
@@ -73,10 +125,6 @@
 			],
 			[
 				"o",
-				"opponent_reward\tunknown ⟠"
-			],
-			[
-				"opp",
 				"opponent_reward\tunknown ⟠"
 			],
 			[
@@ -170,10 +218,6 @@
 			[
 				"pla",
 				"player_manager\tLoop ⟠"
-			],
-			[
-				"c",
-				"current_player\tLoop ⟠"
 			],
 			[
 				"get",
@@ -308,10 +352,6 @@
 				"current_player"
 			],
 			[
-				"rand",
-				"randint"
-			],
-			[
 				"curr",
 				"current_player"
 			],
@@ -380,10 +420,6 @@
 				"card_back_img"
 			],
 			[
-				"lo",
-				"load"
-			],
-			[
 				"C",
 				"CARD_SIZE"
 			]
@@ -391,15 +427,6 @@
 	},
 	"buffers":
 	[
-		{
-			"file": "/D/Colin Berger/Documents/Python/ConnectFourDQN/game.py",
-			"settings":
-			{
-				"buffer_size": 5849,
-				"encoding": "UTF-8",
-				"line_ending": "Windows"
-			}
-		},
 		{
 			"file": "/D/Colin Berger/Documents/Python/ConnectFourDQN/grid.py",
 			"settings":
@@ -428,19 +455,19 @@
 			}
 		},
 		{
-			"file": "/D/Colin Berger/Documents/Python/ConnectFourDQN/example.py",
+			"file": "/D/Colin Berger/Documents/Python/ConnectFourDQN/game.py",
 			"settings":
 			{
-				"buffer_size": 966,
+				"buffer_size": 5854,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
 		},
 		{
-			"file": "/D/Colin Berger/Documents/Python/ConnectFourDQN/train.py",
+			"file": "/D/Colin Berger/Documents/Python/ConnectFourDQN/example.py",
 			"settings":
 			{
-				"buffer_size": 2561,
+				"buffer_size": 967,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
@@ -449,7 +476,16 @@
 			"file": "/D/Colin Berger/Documents/Python/ConnectFourDQN/bot.py",
 			"settings":
 			{
-				"buffer_size": 8941,
+				"buffer_size": 12825,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/D/Colin Berger/Documents/Python/ConnectFourDQN/train.py",
+			"settings":
+			{
+				"buffer_size": 3251,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
@@ -458,7 +494,7 @@
 			"file": "/D/Colin Berger/Documents/Python/ConnectFourDQN/multitest.py",
 			"settings":
 			{
-				"buffer_size": 1100,
+				"buffer_size": 3140,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
@@ -544,10 +580,13 @@
 	},
 	"expanded_folders":
 	[
-		"/D/Colin Berger/Documents/Python/ConnectFourDQN"
+		"/D/Colin Berger/Documents/Python/ConnectFourDQN",
+		"/D/Colin Berger/Documents/Python/ConnectFourDQN/models",
+		"/D/Colin Berger/Documents/Python/ConnectFourDQN/models/128d-256-128d-64d"
 	],
 	"file_history":
 	[
+		"/D/Colin Berger/Documents/Python/ConnectFourDQN/example.py",
 		"/D/Colin Berger/Documents/Python/ConnectFourDQN/multitest",
 		"/D/Colin Berger/Documents/Python/ConnectFourDQN/generator.py",
 		"/D/Colin Berger/Documents/Python/ConnectFourDQN/brain.py",
@@ -580,7 +619,7 @@
 	],
 	"find":
 	{
-		"height": 44.0
+		"height": 36.0
 	},
 	"find_in_files":
 	{
@@ -594,6 +633,10 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"game",
+			"\")\n",
+			"process",
+			"processes",
 			"tf",
 			"time",
 			"os",
@@ -644,6 +687,8 @@
 		"regex": false,
 		"replace_history":
 		[
+			"thread",
+			"threads",
 			"self.param[\"DIAMETER\"]",
 			"self.param[\"SPACING\"]",
 			"self.param[\"RENDER\"]",
@@ -670,40 +715,11 @@
 	"groups":
 	[
 		{
-			"selected": 7,
+			"selected": 4,
 			"sheets":
 			[
 				{
 					"buffer": 0,
-					"file": "/D/Colin Berger/Documents/Python/ConnectFourDQN/game.py",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 5849,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								4509,
-								4509
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Python/Python.sublime-syntax",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 3504.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 6,
-					"type": "text"
-				},
-				{
-					"buffer": 1,
 					"file": "/D/Colin Berger/Documents/Python/ConnectFourDQN/grid.py",
 					"semi_transient": false,
 					"settings":
@@ -715,8 +731,8 @@
 						"selection":
 						[
 							[
-								1166,
-								1166
+								1880,
+								1880
 							]
 						],
 						"settings":
@@ -725,14 +741,14 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 920.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 7,
+					"stack_index": 5,
 					"type": "text"
 				},
 				{
-					"buffer": 2,
+					"buffer": 1,
 					"file": "/D/Colin Berger/Documents/Python/ConnectFourDQN/settings.py",
 					"semi_transient": false,
 					"settings":
@@ -757,11 +773,11 @@
 						"translation.y": 7.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 5,
+					"stack_index": 7,
 					"type": "text"
 				},
 				{
-					"buffer": 3,
+					"buffer": 2,
 					"file": "/D/Colin Berger/Documents/Python/ConnectFourDQN/player.py",
 					"semi_transient": false,
 					"settings":
@@ -783,7 +799,36 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 1447.0,
+						"translation.y": 480.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 6,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "/D/Colin Berger/Documents/Python/ConnectFourDQN/game.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 5854,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3883,
+								3883
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 2024.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 4,
@@ -795,72 +840,44 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 966,
+						"buffer_size": 967,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								364,
-								364
+								262,
+								262
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/Python/Python.sublime-syntax"
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 368.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
+					"stack_index": 0,
 					"type": "text"
 				},
 				{
 					"buffer": 5,
-					"file": "/D/Colin Berger/Documents/Python/ConnectFourDQN/train.py",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 2561,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								771,
-								771
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Python/Python.sublime-syntax",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 736.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 2,
-					"type": "text"
-				},
-				{
-					"buffer": 6,
 					"file": "/D/Colin Berger/Documents/Python/ConnectFourDQN/bot.py",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 8941,
+						"buffer_size": 12825,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								4819,
-								4819
+								9697,
+								9697
 							]
 						],
 						"settings":
@@ -869,10 +886,39 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 4104.0,
+						"translation.y": 2620.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "/D/Colin Berger/Documents/Python/ConnectFourDQN/train.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3251,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1802,
+								1802
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 1200.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
 					"type": "text"
 				},
 				{
@@ -881,15 +927,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1100,
+						"buffer_size": 3140,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								103,
-								103
+								885,
+								885
 							]
 						],
 						"settings":
@@ -898,10 +944,10 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 368.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 3,
 					"type": "text"
 				}
 			]
@@ -909,11 +955,11 @@
 	],
 	"incremental_find":
 	{
-		"height": 43.0
+		"height": 36.0
 	},
 	"input":
 	{
-		"height": 44.0
+		"height": 46.0
 	},
 	"layout":
 	{
@@ -940,7 +986,7 @@
 	"menu_visible": true,
 	"output.exec":
 	{
-		"height": 227.0
+		"height": 250.0
 	},
 	"output.find_results":
 	{
@@ -950,7 +996,7 @@
 	"project": "ConnectFourProject.sublime-project",
 	"replace":
 	{
-		"height": 78.0
+		"height": 80.0
 	},
 	"save_all_on_build": true,
 	"select_file":

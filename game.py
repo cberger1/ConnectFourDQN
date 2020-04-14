@@ -132,7 +132,7 @@ class ConnectFourGame:
 
 		if cell == None:
 			if self.param["END_ON_UNAUTHORIZED"]:
-				self.winner = player
+				self.winner = -1 * player
 				self.over = True
 
 			return self.param["UNAUTHORIZED"], new_state

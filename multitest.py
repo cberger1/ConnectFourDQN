@@ -1,56 +1,106 @@
-# import os
-# os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
-# from multiprocessing import Pool, Process, Queue, Lock
+from multiprocessing import Pool, Process, Queue
 from threading import Thread, Lock, RLock
-from queue import Queue
+import queue
 import numpy as np
 import time
 import random
+from grid import Grid
 from keras.models import Sequential, clone_model, load_model
 from keras.layers import Dense, Reshape
 from keras.optimizers import Adam
 import tensorflow as tf
 
-
 BATCH_SIZE = 32
 MODEL_PATH = "models/64d-64d-32d-16d/1586434040/v003000"
-lock = Lock()
-
-counter = 0
+PROCESSES = 4
 
 
-def prepare_sample(tasks, outs, lock):
-	if tasks.empty():
-		return
+class Simulator(Process):
 
-	# model = load_model(MODEL_PATH)
+	def __init__(self, samples, tasks, outs, *args, **kwargs):
+		super().__init__()
+		self.samples = samples
+		self.tasks = tasks
+		self.outs = outs
 
-	sample = tasks.get()
+	def run(self):
 
-	# q_values = model.predict(np.array([sample]))
+		threads = [Thread(target=simulate, args=[self.samples[i], self.outs]) for i in range(*self.tasks)]
 
-	# lock.acquire()
-	# try:
-	# 	# print('Acquired a lock')
-	# 	counter += 1
-	# finally:
-	# 	# print('Released a lock')
-	# 	lock.release()
+		for thread in threads:
+			thread.start()
 
-	time.sleep(0.01)
+		for thread in threads:
+			thread.join()
 
-	outs.put((sample, np.random.rand(7)))
+		for i in range(*self.tasks):
+			self.outs.put((self.samples[i], np.random.rand(7)))
 
 
-if __name__ == "__main__":
-	x = []
-	y = []
+def simulate(sample, outs=None):
+	time.sleep(0.01) # Compute stuff
 
-	a = np.zeros((8,))
-	b = np.random.rand(8, 7, 6, 1)
-	c = []
+	q_values = np.random.rand(7)
 
-	print([a[i] * b[i] for i in range(8)])
+	if outs == None:
+		return (sample, q_values)
+	else:
+		outs.put((sample, q_values))
+
+
+def thread(samples):
+	results = []
+
+	outs = queue.Queue()
+
+	threads = [Thread(target=simulate, args=[samples[i], outs]) for i in range(BATCH_SIZE)]
+
+	for thread in threads:
+		thread.start()
+
+	for thread in threads:
+		thread.join()
+
+	for i in range(BATCH_SIZE):
+		results.append(outs.get())
+
+	return results
+
+
+def pool(samples):
+	with Pool(processes=PROCESSES) as pool:
+		results = pool.map(simulate, samples)
+	pool.join()
+
+	return samples
+
+
+def combined(samples):
+	results = []
+
+	outs = Queue()
+
+	task = BATCH_SIZE / PROCESSES
+	if int(task) != task:
+		raise Exception("BATCH_SIZE must be divisible by PROCESSES!")
+
+	pool = [Simulator(samples, (int(i*task), int((i+1)*task)), outs) for i in range(PROCESSES)]
+
+	for process in pool:
+		process.start()
+
+	for process in pool:
+		process.join()
+
+	for i in range(BATCH_SIZE):
+		results.append(outs.get())
+
+	return results
+
+
+def gpu_vs_cpu():
+	a = np.zeros((BATCH_SIZE,))
+	b = np.random.rand(BATCH_SIZE, 7, 6, 1)
 
 	model = Sequential()
 
@@ -61,53 +111,40 @@ if __name__ == "__main__":
 
 	model.compile(Adam(), loss="mse")
 
-	print(model.predict(np.array([a[i] * b[i] for i in range(8)])))
+	print(model.predict(np.array([a[i] * b[i] for i in range(BATCH_SIZE)])))
 
-	# test = np.array([np.random.rand(7, 6, 1) for _ in range(4)])
-	# model.predict(test)
+	test = np.array([np.random.rand(7, 6, 1) for _ in range(4)])
+	model.predict(test)
 
-	# start = time.time()
-	# with tf.device('/gpu:0'):
-	# 	model.predict(test)
-	# print(f"GPU : {time.time() - start}")
+	start = time.time()
+	with tf.device('/gpu:0'):
+		model.predict(test)
+	print(f"GPU : {time.time() - start}")
 
-	# start = time.time()
-	# with tf.device('/cpu:0'):
-	# 	model.predict(test)
-	# print(f"CPU : {time.time() - start}")
+	start = time.time()
+	with tf.device('/cpu:0'):
+		model.predict(test)
+	print(f"CPU : {time.time() - start}")
 
-	setup_start = time.time()
 
-	tasks = Queue()
-	outs = Queue()
-
-	lock = Lock()
+if __name__ == "__main__":
+	
 
 	samples = [(np.random.rand(7), random.random()) for _ in range(BATCH_SIZE)]
 
-	states, rewards = zip(*samples)
+	print("Perfromence")
 
-	print(np.argmax(states, axis=1), len(rewards))
+	start = time.time()
+	res = thread(samples)
+	end = time.time()
+	print(f"Thread : {round(end - start, 3)}")
 
-	# for state in states:
-	# 	tasks.put(state)
+	start = time.time()
+	res = pool(samples)
+	end = time.time()
+	print(f"Pool : {round(end - start, 3)}")
 
-	# threads = [Thread(target=prepare_sample, args=[tasks, outs, lock]) for _ in range(BATCH_SIZE)]
-
-	# for thread in threads:
-	# 	thread.start()
-
-	# for thread in threads:
-	# 	thread.join()
-
-	# for i in range(BATCH_SIZE):
-	# 	state, q_values = outs.get()
-
-	# 	x.append(state)
-	# 	y.append(q_values)
-
-	setup_end = time.time()
-
-	print(f"Setup : {round(setup_end - setup_start, 3)}")
-
-	print(len(x), " ", len(y), " ", counter)
+	# start = time.time()
+	# res = combined(samples)
+	# end = time.time()
+	# print(f"Combined : {round(end - start, 3)}")

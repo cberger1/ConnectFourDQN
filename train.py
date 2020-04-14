@@ -1,3 +1,6 @@
+# import os
+# os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
+
 from settings import Settings
 from game import ConnectFourGame
 from player import Player, PlayerManager
@@ -7,14 +10,13 @@ import random
 import tensorflow as tf
 from tensorflow.python.client import device_lib
 from keras.callbacks import TensorBoard, ModelCheckpoint
-from keras.backend.tensorflow_backend import set_session
+#from keras.backend.tensorflow_backend import set_session
 from keras.models import load_model
 
 
 MODEL_DIR = f"models/{MODEL_NAME}/{int(time.time())}"
-MODEL_PATH = "models/64d-64d-32d-16d/1586434040/v003000"
-
-TRACK_MODEL = False
+MODEL_PATH = "models/16c-d-128d-64d-32d/1586866179/v010000"
+TRACK_MODEL = True
 
 # Training Script
 if __name__ == '__main__':
@@ -25,7 +27,7 @@ if __name__ == '__main__':
 
 	env = ConnectFourGame(param, display)
 
-	agent = AgentDQN(param) # , load_model(MODEL_PATH))
+	agent = AgentDQN(param, load_model(MODEL_PATH))
 	agent_random = AgentRadnom()
 
 	player_manager = PlayerManager(agent)
@@ -35,14 +37,17 @@ if __name__ == '__main__':
 		tensorboard.set_model(agent.model)
 
 	total_loss = 0
-	total_setup_time = 0
-	total_train_time = 0
-	total_simulation_time = 0
+	total_steps = 0
+
+	# total_setup_time = 0
+	# total_train_time = 0
+	# total_simulation_time = 0
+
 	epsilon = EPSILON
 
 	for episode in range(EPISODES):
 		# Checks if this episode the game is going to be rendered
-		display = episode % RENDER_EVERY == 0
+		# display = episode % RENDER_EVERY == 0
 
 		env.set_display_mode(display)
 
@@ -62,12 +67,11 @@ if __name__ == '__main__':
 			reward, new_state = env.step(player, action)
 
 			agent.update_replay_memory(np.copy(state), player, action, reward, np.copy(new_state), env.over) # Add sample to the database of the agent
-			# loss, setup_time, train_time, simulation_time = agent.optimize()
-			loss, setup_time, train_time = agent.train()
+			loss, setup_time, train_time, simulation_time = agent.optimize()
 			total_loss += loss
-			total_setup_time += setup_time
-			total_train_time += train_time
-			total_simulation_time += 1 # simulation_time
+			# total_setup_time += setup_time
+			# total_train_time += train_time
+			# total_simulation_time += simulation_time
 
 			state = np.copy(new_state)
 			steps += 1
@@ -76,27 +80,32 @@ if __name__ == '__main__':
 				env.render() # Render game board
 				env.pause(0.2) # Pause (in seconds)
 
+		total_steps += steps
+
 		if display and SHOW_GAME_OVER:
 			env.show_game_over_screen()
 
 		if episode % PLOT_EVERY == 0 and episode != 0:
 			if TRACK_MODEL:
-				tensorboard.on_epoch_end(episode, {"loss" : total_loss / PLOT_EVERY})
+				tensorboard.on_epoch_end(episode, {"loss" : total_loss / PLOT_EVERY, "steps" : total_steps / PLOT_EVERY})
 			
-			setup = round(total_setup_time / PLOT_EVERY, 3)
-			train = round(total_train_time / PLOT_EVERY, 3)
-			simulation = round(total_simulation_time / PLOT_EVERY, 3)
-			if train != 0:
-				ratio = round(setup / train, 3)
-			else:
-				ratio = None
-
-			print(f"Setup : {setup}, Training : {train}, Ratio : {ratio}, Simulation : {simulation}")
-
 			total_loss = 0
-			total_setup_time = 0
-			total_train_time = 0
-			total_simulation_time = 0
+			total_steps = 0
+
+			# setup = round(total_setup_time / PLOT_EVERY, 3)
+			# train = round(total_train_time / PLOT_EVERY, 3)
+			# simulation = round(total_simulation_time / PLOT_EVERY, 3)
+
+			# if train != 0:
+			# 	ratio = round(setup / train, 3)
+			# else:
+			# 	ratio = None
+
+			# print(f"Setup : {setup}, Training : {train}, Ratio : {ratio}, Simulation : {simulation}")
+
+			# total_setup_time = 0
+			# total_train_time = 0
+			# total_simulation_time = 0
 
 		if episode % UPDATE_TARGET_MODEL_EVERY == 0 and episode != 0: # If necessary update target model
 			print("Episode : ", episode)
