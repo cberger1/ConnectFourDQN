@@ -1,5 +1,7 @@
 # Python Test Files
 multitest.py
+multimodeltest.py
+threadingtest.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

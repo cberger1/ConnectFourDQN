@@ -148,7 +148,7 @@ class AgentDQN(Player):
 	def save(self, directory, name):
 		if not os.path.exists(directory):
 			os.makedirs(directory)
-		self.target_model.save(f"{directory}/{name}")
+		self.target_model.save(os.path.join(directory, name))
 
 	def play(self, state, player, epsilon=0, use_target_model=False):
 		# First compute the Q-Values, then return the index with the highest Q-Value aka the action

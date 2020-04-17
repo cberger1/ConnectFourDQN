@@ -15,7 +15,7 @@ from keras.models import load_model
 
 
 MODEL_DIR = f"models/{MODEL_NAME}/{int(time.time())}"
-MODEL_PATH = "models/16c-d-128d-64d-32d/1586866179/v010000"
+MODEL_PATH = "models/16c-d-128d-64d-32d/1586870892/v010000"
 TRACK_MODEL = True
 
 # Training Script
@@ -123,4 +123,3 @@ if __name__ == '__main__':
 
 	if TRACK_MODEL:
 		tensorboard.on_train_end(None)
-
