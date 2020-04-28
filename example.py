@@ -1,3 +1,6 @@
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+
 from settings import Settings
 from game import ConnectFourGame
 from player import Player, PlayerConsole, PlayerManager
@@ -7,7 +10,7 @@ import time
 import numpy as np
 
 
-MODEL_PATH = "models/16c-d-128d-64d-32d/1586870892/v010000"
+MODEL_PATH = "models/128d-128d-64d/1587831378/v024000"
 
 
 # Connect Four Game Example 
@@ -25,10 +28,10 @@ if __name__ == "__main__":
 	state = game.get_state()
 
 	while not game.over:
-		prediction = bot.model.predict(np.array([state]))
-		print(np.round(prediction, 2))
-
 		player, action = player_manager.play(state=state) # Passing state for the AgentDQN
+
+		prediction = bot.model.predict(player * np.array([state]))
+		print(np.round(prediction, 2))
 
 		reward, new_state = game.step(player, action)
 

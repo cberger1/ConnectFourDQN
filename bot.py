@@ -16,12 +16,12 @@ from grid import Grid
 from game import ConnectFourGame
 
 
+EPOCHS = 1
+EPISODES = 12_000
 
-EPISODES = 10_000
-
-UPDATE_TARGET_MODEL_EVERY = 200
-SAVE_EVERY = 200
-PLOT_EVERY = 10
+UPDATE_TARGET_MODEL_EVERY = 500
+SAVE_EVERY = 1_000
+PLOT_EVERY = 100
 
 REPLAY_MEMORY_SIZE = 10_000
 MIN_TRAIN_SAMPLE = 1_000 # Avoid overfitting the first houndred samples
@@ -29,10 +29,10 @@ BATCH_SIZE = 32
 
 GAMMA = 0.95
 
-HINT = 0.1
+HINT = 0.35
 
 EPSILON = 1
-EPSILON_DECAY = 0.999
+EPSILON_DECAY = 0.9999
 MIN_EPSILON = 0.1
 
 RENDER_EVERY = 200
@@ -47,7 +47,7 @@ Dense : {units}d
 Dropout : d
 '''
 
-MODEL_NAME = "16c-d-128d-64d-32d"
+MODEL_NAME = "16c-d-128-128-64d"
 
 
 class OneHotEncoder:
@@ -128,15 +128,17 @@ class AgentDQN(Player):
 			model = Sequential()
 
 			# model.add(Reshape((42,), input_shape=(7, 6, 1)))
-			model.add(Convolution2D(16, (4, 4), padding="valid", input_shape=(7, 6, 1), activation="relu"))
+			model.add(Convolution2D(16, (4, 4), padding="valid", input_shape=(7, 6, 1), activation="tanh"))
 			# model.add(MaxPooling2D(pool_size=(2, 2), padding='valid'))
-			model.add(Flatten())
 			model.add(Dropout(0.2))
+			# model.add(Convolution2D(16, (2, 2), padding="valid", activation="tanh"))
+			# model.add(Dropout(0.2))
+			model.add(Flatten())
 			# model.add(Dropout(0.2))
 			# model.add(Dense(64, activation="relu"))
 			model.add(Dense(128, activation="relu"))
+			model.add(Dense(128, activation="relu"))
 			model.add(Dense(64, activation="relu"))
-			model.add(Dense(32, activation="relu"))
 			model.add(Dense(self.param["ACTION_SPACE"], activation="tanh"))
 
 			model.compile(optimizer=Adam(), loss="mse")
@@ -280,7 +282,9 @@ class AgentDQN(Player):
 
 		states, players, actions, rewards, opponent_states, overs = zip(*samples) # Exctract from batch
 
-		q_values = self.model.predict(np.array([players[i] * states[i] for i in range(BATCH_SIZE)])) # Compute the q_values
+		x = np.array([players[i] * states[i] for i in range(BATCH_SIZE)])
+
+		q_values = self.model.predict(x) # Compute the q_values
 
 		predictions = self.target_model.predict(np.array([-1 * players[i] * opponent_states[i] for i in range(BATCH_SIZE)]))
 		opponent_actions = np.argmax(predictions, axis=1)
@@ -336,7 +340,7 @@ class AgentDQN(Player):
 		setup_end = time.time()
 
 		train_start = time.time()
-		loss = self.model.train_on_batch(np.array(states), np.array(q_values))
+		loss = self.model.train_on_batch(x, np.array(q_values))
 		train_end = time.time()
 
 		simulation_time = simulation_end - simulation_start
