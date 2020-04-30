@@ -69,12 +69,16 @@ class PlayerManager:
 
 		self.two_player = len(self.players) == 2
 	
+	def reset(self):
+		self.current_player = 1
+		self.index = 0
+
 	def play(self, **kwargs):
-		cell = self.players[self.index].play(**kwargs, player=self.current_player)
+		action = self.players[self.index].play(**kwargs, player=self.current_player)
 
 		if self.two_player:
 			self.index = not self.index # If two different players : index changes form 0 (False) to 1 (True) and vice versa
 		
 		self.current_player *= -1 # 1 becomes -1 and vice versa
 
-		return self.current_player, cell
+		return -self.current_player, action

@@ -16,15 +16,15 @@ from grid import Grid
 from game import ConnectFourGame
 
 
-EPOCHS = 1
-EPISODES = 12_000
+EPOCHS = 2
+EPISODES = 5_000
 
-UPDATE_TARGET_MODEL_EVERY = 500
+UPDATE_TARGET_MODEL_EVERY = 200
 SAVE_EVERY = 1_000
 PLOT_EVERY = 100
 
 REPLAY_MEMORY_SIZE = 10_000
-MIN_TRAIN_SAMPLE = 1_000 # Avoid overfitting the first houndred samples
+MIN_TRAIN_SAMPLE = 1_000 # Avoid overfitting the first coubple hundred samples
 BATCH_SIZE = 32
 
 GAMMA = 0.95
@@ -32,7 +32,7 @@ GAMMA = 0.95
 HINT = 0.35
 
 EPSILON = 1
-EPSILON_DECAY = 0.9999
+EPSILON_DECAY = 0.999
 MIN_EPSILON = 0.1
 
 RENDER_EVERY = 200
@@ -41,13 +41,13 @@ MAX_ACTIONS = 7 * 6
 
 '''
 Model naming:
-Conv2D : {filters}c
-MaxPooling2D : m
+Conv2D : {filters}x{kenel}c
+MaxPooling2D : {pool}m
 Dense : {units}d
 Dropout : d
 '''
 
-MODEL_NAME = "16c-d-128-128-64d"
+MODEL_NAME = "16x3x3c-d-16x2x2c-128d-256d-64d"
 
 
 class OneHotEncoder:
@@ -128,16 +128,16 @@ class AgentDQN(Player):
 			model = Sequential()
 
 			# model.add(Reshape((42,), input_shape=(7, 6, 1)))
-			model.add(Convolution2D(16, (4, 4), padding="valid", input_shape=(7, 6, 1), activation="tanh"))
+			model.add(Convolution2D(16, (3, 3), padding="valid", input_shape=(7, 6, 1), activation="tanh"))
 			# model.add(MaxPooling2D(pool_size=(2, 2), padding='valid'))
 			model.add(Dropout(0.2))
-			# model.add(Convolution2D(16, (2, 2), padding="valid", activation="tanh"))
+			model.add(Convolution2D(16, (2, 2), padding="valid", activation="tanh"))
 			# model.add(Dropout(0.2))
 			model.add(Flatten())
 			# model.add(Dropout(0.2))
-			# model.add(Dense(64, activation="relu"))
+			# model.add(Dense(128, activation="relu"))
 			model.add(Dense(128, activation="relu"))
-			model.add(Dense(128, activation="relu"))
+			model.add(Dense(256, activation="relu"))
 			model.add(Dense(64, activation="relu"))
 			model.add(Dense(self.param["ACTION_SPACE"], activation="tanh"))
 
@@ -168,115 +168,11 @@ class AgentDQN(Player):
 	def update_target_model(self):
 		self.target_model.set_weights(self.model.get_weights())
 
-	def optimize2(self):
-		if len(self.replay_memory) < MIN_TRAIN_SAMPLE:
-			return (0, 0, 0, 0)
-
-		setup_start = time.time() # Start Timer
-
-		samples = random.choices(self.replay_memory, k=BATCH_SIZE) # Get a random samples
-
-		# [0] state, [1] player, [2] action, [3] reward, [4] opponent_state, [5] over = sample
-
-		q_values = self.model.predict(np.array([samples[i][1] * samples[i][0] for i in range(BATCH_SIZE)]))
-
-		predictions = self.target_model.predict(np.array([-1 * samples[i][1] * samples[i][4] for i in range(BATCH_SIZE)]))
-		opponent_actions = np.argmax(predictions, axis=1)
-
-		simulation_start = time.time()
-
-		outs = Queue()
-
-		threads = [Thread(target=self.simulate, args=[samples[i], opponent_actions[i], outs]) for i in range(BATCH_SIZE)]
-
-		for thread in threads:
-			thread.start()
-
-		for thread in threads:
-			thread.join()
-
-		new_states = []
-		targets = []
-
-		for _ in range(BATCH_SIZE):
-			new_state, target = outs.get()
-			new_states.append(new_states)
-			targets.append(target)
-
-		simulation_end = time.time()
-
-		predictions = self.target_model.predict(np.array([samples[i][1] * samples[i][0] for i in range(BATCH_SIZE)]))
-		expectations = np.amax(predictions, axis=1)
-
-		for i in range(BATCH_SIZE):
-			if targets[i] == None:
-				targets[i] = samples[i][3] + GAMMA * expectations[i]
-
-			q_values[i][samples[i][2]] = targets[i]
-
-			# Attention: very low level; If any changes are made to the game logic please consider chaning these lines!
-			for action in range(self.param["ACTION_SPACE"]):
-				if samples[i][0][action][0][0] != 0:
-					q_values[i][action] = self.param["UNAUTHORIZED"]
-
-		setup_end = time.time()
-
-		train_start = time.time()
-		loss = self.model.train_on_batch(np.array([samples[i][0] for i in range(BATCH_SIZE)]), np.array(q_values))
-		train_end = time.time()
-
-		simulation_time = simulation_end - simulation_start
-		setup_time = setup_end - setup_start
-		train_time = train_end - train_start
-
-		# print(f"Setup : {round(setup_time, 3)}, Training : {round(train_time, 3)}, Ratio : {round(setup_time / train_time, 3)}")
-
-		return (loss, setup_time, train_time, simulation_time)
-
-	def simulate2(self, sample, opponent_action, outs):
-		'''
-		A Grid is used for simulating the opponent
-		It's chosen over a more high level ConnectFourGame approach
-		Because of drastic performance improvement
-		'''
-
-		# [0] state, [1] player, [2] action, [3] reward, [4] opponent_state, [5] over = sample
-
-		grid = Grid()
-
-		opponent_player = -1 * sample[1] # player
-
-		if sample[5]: # over
-			new_state = sample[4] # opponent_state
-			target = sample[3] # reward
-		else:
-			grid.set_grid(sample[4])
-
-			if not opponent_action in grid.free_column:
-				opponent_action = random.choice(grid.free_column)
-
-			cell = grid.play_coin(opponent_player, opponent_action)
-
-			# No need to check for UNAUTHORIZED because only valid actions can be chosen
-			# if cell == None and self.param["END_ON_UNAUTHORIZED"]:
-			# 	target = self.param["WIN"]
-
-			if grid.is_winning_coin(cell, opponent_player):
-				target = self.param["LOSE"]
-			elif grid.is_full():
-				target = self.param["DRAW"]
-			else:
-				target = None
-
-			new_state = grid.get_grid()
-
-		outs.put((new_state, target))
-
 	def optimize(self):
 		if len(self.replay_memory) < MIN_TRAIN_SAMPLE:
 			return (0, 0, 0, 0)
 
-		setup_start = time.time() # Start Timer
+		setup_start = time.time() # Start Setup Timer
 
 		samples = random.choices(self.replay_memory, k=BATCH_SIZE) # Get a random batch
 
@@ -289,13 +185,13 @@ class AgentDQN(Player):
 		predictions = self.target_model.predict(np.array([-1 * players[i] * opponent_states[i] for i in range(BATCH_SIZE)]))
 		opponent_actions = np.argmax(predictions, axis=1)
 
-		simulation_start = time.time()
+		simulation_start = time.time() # Start Simulation Timer
 
 		tasks = Queue()
 		outs = Queue()
 
 		for i in range(BATCH_SIZE):
-			tasks.put((rewards[i], overs[i], opponent_states[i], -1 * players[i], opponent_actions[i]))
+			tasks.put((i, rewards[i], overs[i], opponent_states[i], -1 * players[i], opponent_actions[i]))
 
 		threads = [Thread(target=self.simulate, args=[tasks, outs]) for _ in range(BATCH_SIZE)]
 
@@ -305,19 +201,20 @@ class AgentDQN(Player):
 		for thread in threads:
 			thread.join()
 
-		new_states = []
-		targets = []
-		hints = []
+		new_states = [0]*BATCH_SIZE
+		targets = [0]*BATCH_SIZE
+		hints = [0]*BATCH_SIZE
 
 		for _ in range(BATCH_SIZE):
-			new_state, target, hint = outs.get()
-			new_states.append(new_states)
-			targets.append(target)
-			hints.append(hint)
+			index, new_state, target, hint = outs.get()
 
-		simulation_end = time.time()
+			new_states[index] = new_state
+			targets[index] = target
+			hints[index] = hint
 
-		predictions = self.target_model.predict(np.array([players[i] * states[i] for i in range(BATCH_SIZE)]))
+		simulation_end = time.time() # End Simulation Timer
+
+		predictions = self.target_model.predict(np.array([players[i] * new_states[i] for i in range(BATCH_SIZE)]))
 		expectations = np.amax(predictions, axis=1)
 
 		for i in range(BATCH_SIZE):
@@ -337,11 +234,11 @@ class AgentDQN(Player):
 				if states[i][action][0][0] != 0:
 					q_values[i][action] = self.param["UNAUTHORIZED"]
 
-		setup_end = time.time()
+		setup_end = time.time() # End Setup Timer
 
-		train_start = time.time()
+		train_start = time.time() # Start Train Timer
 		loss = self.model.train_on_batch(x, np.array(q_values))
-		train_end = time.time()
+		train_end = time.time() # End Train Timer
 
 		simulation_time = simulation_end - simulation_start
 		setup_time = setup_end - setup_start
@@ -360,7 +257,7 @@ class AgentDQN(Player):
 
 		grid = Grid()
 
-		reward, over, opponent_state, opponent_player, opponent_action = tasks.get()
+		index, reward, over, opponent_state, opponent_player, opponent_action = tasks.get()
 
 		hint = None
 
@@ -389,7 +286,7 @@ class AgentDQN(Player):
 
 			new_state = grid.get_grid()
 
-		outs.put((new_state, target, hint))
+		outs.put((index, new_state, target, hint))
 
 	def train(self):
 		warnings.warn("This function is super slow! Please consider using optimze!")

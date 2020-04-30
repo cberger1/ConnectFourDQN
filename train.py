@@ -53,6 +53,8 @@ if __name__ == '__main__':
 
 			state = env.reset(display)
 
+			player_manager.reset()
+
 			steps = 0
 			
 			# Decay epsilon

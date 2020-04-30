@@ -4,6 +4,10 @@
 		"selected_items":
 		[
 			[
+				"player",
+				"player_manager\tPlayerManager ⟠"
+			],
+			[
 				"thra",
 				"threads\tlist ⟠"
 			],
@@ -384,10 +388,6 @@
 				"pile_history"
 			],
 			[
-				"player",
-				"players"
-			],
-			[
 				"game",
 				"game_area"
 			],
@@ -444,19 +444,19 @@
 	"buffers":
 	[
 		{
-			"file": "/D/Colin Berger/Documents/Python/ConnectFourDQN/bot.py",
+			"file": "/D/Colin Berger/Documents/Python/ConnectFourDQN/train.py",
 			"settings":
 			{
-				"buffer_size": 13273,
+				"buffer_size": 4082,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
 		},
 		{
-			"file": "/D/Colin Berger/Documents/Python/ConnectFourDQN/train.py",
+			"file": "/D/Colin Berger/Documents/Python/ConnectFourDQN/bot.py",
 			"settings":
 			{
-				"buffer_size": 4044,
+				"buffer_size": 10279,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
@@ -465,25 +465,7 @@
 			"file": "/D/Colin Berger/Documents/Python/ConnectFourDQN/example.py",
 			"settings":
 			{
-				"buffer_size": 1024,
-				"encoding": "UTF-8",
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "/D/Colin Berger/Documents/Python/ConnectFourDQN/multimodeltest.py",
-			"settings":
-			{
-				"buffer_size": 4075,
-				"encoding": "UTF-8",
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "/D/Colin Berger/Documents/Python/ConnectFourDQN/threadingtest.py",
-			"settings":
-			{
-				"buffer_size": 1274,
+				"buffer_size": 1106,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
@@ -569,13 +551,19 @@
 	},
 	"expanded_folders":
 	[
-		"/D/Colin Berger/Documents/Python/ConnectFourDQN"
+		"/D/Colin Berger/Documents/Python/ConnectFourDQN",
+		"/D/Colin Berger/Documents/Python/ConnectFourDQN/models",
+		"/D/Colin Berger/Documents/Python/ConnectFourDQN/models/16x4x4c-128-256d-64"
 	],
 	"file_history":
 	[
-		"/D/Colin Berger/Documents/Python/ConnectFourDQN/.gitignore",
-		"/D/Colin Berger/Documents/Python/ConnectFourDQN/game.py",
 		"/D/Colin Berger/Documents/Python/ConnectFourDQN/player.py",
+		"/D/Colin Berger/Documents/Python/ConnectFourDQN/train.py",
+		"/D/Colin Berger/Documents/Python/ConnectFourDQN/bot.py",
+		"/D/Colin Berger/Documents/Python/ConnectFourDQN/threadingtest.py",
+		"/D/Colin Berger/Documents/Python/ConnectFourDQN/multimodeltest.py",
+		"/D/Colin Berger/Documents/Python/ConnectFourDQN/game.py",
+		"/D/Colin Berger/Documents/Python/ConnectFourDQN/.gitignore",
 		"/D/Colin Berger/Documents/Python/ConnectFourDQN/settings.py",
 		"/D/Colin Berger/Documents/Python/ConnectFourDQN/grid.py",
 		"/D/Colin Berger/Documents/Python/ConnectFourDQN/multitest.py",
@@ -583,7 +571,6 @@
 		"/D/Colin Berger/Documents/Python/ConnectFourDQN/multitest",
 		"/D/Colin Berger/Documents/Python/ConnectFourDQN/generator.py",
 		"/D/Colin Berger/Documents/Python/ConnectFourDQN/brain.py",
-		"/D/Colin Berger/Documents/Python/ConnectFourDQN/bot.py",
 		"/D/Colin Berger/Documents/Python/ConnectFourDQN/visualisation.py",
 		"/C/Users/Colin Berger/AppData/Roaming/Sublime Text 3/Packages/SublimeREPL/SublimeREPL.sublime-settings",
 		"/D/Colin Berger/Documents/Python/ConnectFourDQN/Sublime/ConnectFourProject.sublime-project",
@@ -710,24 +697,24 @@
 	"groups":
 	[
 		{
-			"selected": 2,
+			"selected": 0,
 			"sheets":
 			[
 				{
 					"buffer": 0,
-					"file": "/D/Colin Berger/Documents/Python/ConnectFourDQN/bot.py",
+					"file": "/D/Colin Berger/Documents/Python/ConnectFourDQN/train.py",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 13273,
+						"buffer_size": 4082,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								985,
-								985
+								428,
+								428
 							]
 						],
 						"settings":
@@ -736,27 +723,27 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 216.0,
+						"translation.y": 368.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 0,
 					"type": "text"
 				},
 				{
 					"buffer": 1,
-					"file": "/D/Colin Berger/Documents/Python/ConnectFourDQN/train.py",
+					"file": "/D/Colin Berger/Documents/Python/ConnectFourDQN/bot.py",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 4044,
+						"buffer_size": 10279,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1313,
-								1313
+								531,
+								531
 							]
 						],
 						"settings":
@@ -777,15 +764,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1024,
+						"buffer_size": 1106,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								310,
-								310
+								321,
+								321
 							]
 						],
 						"settings":
@@ -794,66 +781,10 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 184.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "/D/Colin Berger/Documents/Python/ConnectFourDQN/multimodeltest.py",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 4075,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								94,
-								94
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Python/Python.sublime-syntax"
-						},
-						"translation.x": 0.0,
-						"translation.y": 216.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 4,
-					"type": "text"
-				},
-				{
-					"buffer": 4,
-					"file": "/D/Colin Berger/Documents/Python/ConnectFourDQN/threadingtest.py",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1274,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								532,
-								532
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Python/Python.sublime-syntax"
-						},
-						"translation.x": 0.0,
-						"translation.y": 648.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 3,
+					"stack_index": 2,
 					"type": "text"
 				}
 			]
